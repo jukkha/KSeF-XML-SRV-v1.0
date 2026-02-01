@@ -22,5 +22,10 @@ Rules:
 
 \- No new logic in legacy `zcl\_ksef\_data\_helper`.
 
+## Decision log policy
+- Codex MUST read `docs/decisions.md`.
+- Codex MUST NOT commit changes to `docs/decisions.md` directly.
+- If a PR introduces a new architectural/design decision, Codex MUST include a
+  "Suggested decisions.md update" section in the PR description.
 
 
