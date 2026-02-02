@@ -134,6 +134,22 @@ METHODS create_and_validate_xmls
 
 ---
 
+### 5.5 Текущее состояние (скелет)
+
+В репозитории создан скелет фасада `ZCL_KSEF_FOUND_XML_SERVICE` с batch-API по `ksef_id` и отдельными классами-компонентами (пустые реализации):
+
+- `ZCL_KSEF_FOUND_XML_REPOSITORY` (заглушка без SELECT),
+- `ZCL_KSEF_FOUND_XML_ASSEMBLER`,
+- `ZCL_KSEF_FOUND_XML_READER`,
+- `ZCL_KSEF_FOUND_XML_DIFF`,
+- `ZCL_KSEF_FOUND_XML_COR_BUILDER`,
+- `ZCL_KSEF_FOUND_XML_RENDERER`,
+- `ZCL_KSEF_FOUND_XML_VALIDATOR`.
+
+Скелет отражает распределение обязанностей и служит точкой для дальнейшего переноса логики из `zcl_ksef_data_helper` без изменения поведения существующего кода.
+
+---
+
 ## 6. Рефакторинг `zcl_ksef_data_helper`
 
 ### 6.1 Что делать с классом
