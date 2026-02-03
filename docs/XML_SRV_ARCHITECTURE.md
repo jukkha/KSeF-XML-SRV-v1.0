@@ -262,6 +262,9 @@ METHODS create_and_validate_xmls
   - строка → decfloat34/packed с округлением до нужной точности,
   - иначе дифф может срабатывать из-за формата.
 
+### 12.4 `components/contracts`
+  Cross-component DTO/types are defined in shared public contracts (interfaces/types), not in private sections.
+
 ---
 
 **Конец документа.**

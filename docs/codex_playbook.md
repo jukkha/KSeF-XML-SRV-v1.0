@@ -296,6 +296,17 @@ Forbidden:
 
 \- standard table → lists.
 
+\### 7.4 Visibility rules (STRICT)
+\- If a type/method/constant is referenced from another global class/interface,
+  it MUST NOT be placed in PRIVATE SECTION.
+\- Shared contracts must be exposed via:
+  1) public types/methods (PUBLIC SECTION), or
+  2) ZIF_* interface (preferred), or
+  3) dedicated shared types container (e.g. ZIF_KSEF_XML_TYPES).
+\- PRIVATE SECTION is allowed ONLY for implementation details used solely within the same class.
+\- Codex must check cross-class references before choosing visibility.
+
+
 
 
 Always define keys for hashed/sorted tables.
