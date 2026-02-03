@@ -6,6 +6,10 @@ CLASS zcl_ksef_found_xml_diff DEFINITION
   PUBLIC SECTION.
     CONSTANTS gc_amount_tolerance_default TYPE decfloat34 VALUE '0.01'.
 
+    METHODS normalize_amount
+      IMPORTING iv_value        TYPE string
+      RETURNING VALUE(rv_value) TYPE decfloat34.
+
     METHODS diff_invoice
       IMPORTING is_old              TYPE zif_ksef_xml_types=>ty_invoice
                 is_new              TYPE zif_ksef_xml_types=>ty_invoice
@@ -36,10 +40,6 @@ CLASS zcl_ksef_found_xml_diff DEFINITION
     METHODS normalize_text
       IMPORTING iv_value        TYPE string
       RETURNING VALUE(rv_value) TYPE string.
-
-    METHODS normalize_amount
-      IMPORTING iv_value        TYPE string
-      RETURNING VALUE(rv_value) TYPE decfloat34.
 
     METHODS compare_podmiot_struct
       IMPORTING is_old         TYPE zif_ksef_xml_types=>ty_podmiot
