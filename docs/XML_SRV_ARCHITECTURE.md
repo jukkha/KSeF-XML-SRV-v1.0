@@ -185,6 +185,7 @@ METHODS create_and_validate_xmls
 
 - **UI/ALV типы** (`zkstg_header`, `zkstg_top_alv*`, фильтры, сообщения) — да, в type-pool.
 - **domain model для XML** — лучше как TYPES внутри XML service (или отдельный include/type group внутри Foundation), чтобы UI не зависел от внутренних структур генерации XML.
+- **shared XML Service types** — определены в `ZIF_KSEF_XML_TYPES`.
 - **сообщения** — хорошо унифицировать: `zkstg_s_message` / `zkstg_t_message` как единый формат.
 
 ---
