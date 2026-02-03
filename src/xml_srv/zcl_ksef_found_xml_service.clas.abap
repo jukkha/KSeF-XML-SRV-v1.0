@@ -38,7 +38,7 @@ CLASS zcl_ksef_found_xml_service DEFINITION
 
     TYPES:
       BEGIN OF ty_invoice_item,
-        item_no TYPE numc6,
+        item_no TYPE posnr,
       END OF ty_invoice_item,
       tt_invoice_items TYPE STANDARD TABLE OF ty_invoice_item WITH EMPTY KEY.
 
@@ -50,7 +50,7 @@ CLASS zcl_ksef_found_xml_service DEFINITION
 
     TYPES:
       BEGIN OF ty_zal_item,
-        item_no TYPE numc6,
+        item_no TYPE posnr,
       END OF ty_zal_item,
       tt_zal_items TYPE STANDARD TABLE OF ty_zal_item WITH EMPTY KEY.
 
@@ -76,34 +76,26 @@ CLASS zcl_ksef_found_xml_service DEFINITION
       END OF ty_repo_invoice,
       tt_repo_invoices TYPE STANDARD TABLE OF ty_repo_invoice WITH EMPTY KEY.
 
-    CLASS lcl_repository DEFINITION DEFERRED.
-    CLASS lcl_invoice_assembler DEFINITION DEFERRED.
-    CLASS lcl_xml_reader DEFINITION DEFERRED.
-    CLASS lcl_diff_engine DEFINITION DEFERRED.
-    CLASS lcl_correction_builder DEFINITION DEFERRED.
-    CLASS lcl_renderer DEFINITION DEFERRED.
-    CLASS lcl_validator DEFINITION DEFERRED.
-
-    DATA mo_repository         TYPE REF TO lcl_repository.
-    DATA mo_assembler          TYPE REF TO lcl_invoice_assembler.
-    DATA mo_xml_reader         TYPE REF TO lcl_xml_reader.
-    DATA mo_diff_engine        TYPE REF TO lcl_diff_engine.
-    DATA mo_correction_builder TYPE REF TO lcl_correction_builder.
-    DATA mo_renderer           TYPE REF TO lcl_renderer.
-    DATA mo_validator          TYPE REF TO lcl_validator.
+    DATA mo_repository         TYPE REF TO zcl_ksef_found_xml_repository.
+    DATA mo_assembler          TYPE REF TO zcl_ksef_found_xml_assembler.
+    DATA mo_xml_reader         TYPE REF TO zcl_ksef_found_xml_reader.
+    DATA mo_diff_engine        TYPE REF TO zcl_ksef_found_xml_diff.
+    DATA mo_correction_builder TYPE REF TO zcl_ksef_found_xml_cor_builder.
+    DATA mo_renderer           TYPE REF TO zcl_ksef_found_xml_renderer.
+    DATA mo_validator          TYPE REF TO zcl_ksef_found_xml_validator.
 
 ENDCLASS.
 
 CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
 
   METHOD constructor.
-    mo_repository = NEW lcl_repository( ).
-    mo_assembler = NEW lcl_invoice_assembler( ).
-    mo_xml_reader = NEW lcl_xml_reader( ).
-    mo_diff_engine = NEW lcl_diff_engine( ).
-    mo_correction_builder = NEW lcl_correction_builder( ).
-    mo_renderer = NEW lcl_renderer( ).
-    mo_validator = NEW lcl_validator( ).
+    mo_repository = NEW zcl_ksef_found_xml_repository( ).
+    mo_assembler = NEW zcl_ksef_found_xml_assembler( ).
+    mo_xml_reader = NEW zcl_ksef_found_xml_reader( ).
+    mo_diff_engine = NEW zcl_ksef_found_xml_diff( ).
+    mo_correction_builder = NEW zcl_ksef_found_xml_cor_builder( ).
+    mo_renderer = NEW zcl_ksef_found_xml_renderer( ).
+    mo_validator = NEW zcl_ksef_found_xml_validator( ).
   ENDMETHOD.
 
   METHOD create_and_validate_xmls.
@@ -119,150 +111,4 @@ CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-ENDCLASS.
-
-CLASS lcl_repository DEFINITION.
-  PUBLIC SECTION.
-    METHODS read_batch
-      IMPORTING it_ksef_ids TYPE zkstg_t_inv_key
-      RETURNING VALUE(rt_invoices) TYPE zcl_ksef_found_xml_service=>tt_repo_invoices.
-ENDCLASS.
-
-CLASS lcl_repository IMPLEMENTATION.
-  METHOD read_batch.
-    CLEAR rt_invoices.
-  ENDMETHOD.
-ENDCLASS.
-
-CLASS lcl_invoice_assembler DEFINITION.
-  PUBLIC SECTION.
-    METHODS assemble
-      IMPORTING is_repo_invoice TYPE zcl_ksef_found_xml_service=>ty_repo_invoice
-      RETURNING VALUE(rs_invoice) TYPE zcl_ksef_found_xml_service=>ty_invoice.
-ENDCLASS.
-
-CLASS lcl_invoice_assembler IMPLEMENTATION.
-  METHOD assemble.
-    CLEAR rs_invoice.
-    rs_invoice-header-ksef_id = is_repo_invoice-ksef_id.
-  ENDMETHOD.
-ENDCLASS.
-
-CLASS lcl_xml_reader DEFINITION.
-  PUBLIC SECTION.
-    METHODS read_podmiot
-      IMPORTING iv_xml     TYPE string
-                iv_tagname TYPE string
-      RETURNING VALUE(rs_podmiot) TYPE zcl_ksef_found_xml_service=>ty_podmiot.
-
-    METHODS read_podmiot3_list
-      IMPORTING iv_xml TYPE string
-      RETURNING VALUE(rt_podmiot) TYPE zcl_ksef_found_xml_service=>tt_podmiot.
-
-    METHODS read_items
-      IMPORTING iv_xml TYPE string
-      RETURNING VALUE(rt_items) TYPE zcl_ksef_found_xml_service=>tt_invoice_items.
-
-    METHODS read_zal_items
-      IMPORTING iv_xml TYPE string
-      RETURNING VALUE(rt_items) TYPE zcl_ksef_found_xml_service=>tt_zal_items.
-
-    METHODS read_simple_tag
-      IMPORTING iv_xml     TYPE string
-                iv_tagname TYPE string
-      RETURNING VALUE(rv_value) TYPE string.
-ENDCLASS.
-
-CLASS lcl_xml_reader IMPLEMENTATION.
-  METHOD read_podmiot.
-    CLEAR rs_podmiot.
-  ENDMETHOD.
-
-  METHOD read_podmiot3_list.
-    CLEAR rt_podmiot.
-  ENDMETHOD.
-
-  METHOD read_items.
-    CLEAR rt_items.
-  ENDMETHOD.
-
-  METHOD read_zal_items.
-    CLEAR rt_items.
-  ENDMETHOD.
-
-  METHOD read_simple_tag.
-    CLEAR rv_value.
-  ENDMETHOD.
-ENDCLASS.
-
-CLASS lcl_diff_engine DEFINITION.
-  PUBLIC SECTION.
-    METHODS diff_podmiot
-      IMPORTING is_old TYPE zcl_ksef_found_xml_service=>ty_podmiot
-                is_new TYPE zcl_ksef_found_xml_service=>ty_podmiot
-      RETURNING VALUE(rv_diff) TYPE abap_bool.
-
-    METHODS diff_items
-      IMPORTING it_old TYPE zcl_ksef_found_xml_service=>tt_invoice_items
-                it_new TYPE zcl_ksef_found_xml_service=>tt_invoice_items
-      RETURNING VALUE(rv_diff) TYPE abap_bool.
-
-    METHODS diff_zal_items
-      IMPORTING it_old TYPE zcl_ksef_found_xml_service=>tt_zal_items
-                it_new TYPE zcl_ksef_found_xml_service=>tt_zal_items
-      RETURNING VALUE(rv_diff) TYPE abap_bool.
-ENDCLASS.
-
-CLASS lcl_diff_engine IMPLEMENTATION.
-  METHOD diff_podmiot.
-    rv_diff = abap_false.
-  ENDMETHOD.
-
-  METHOD diff_items.
-    rv_diff = abap_false.
-  ENDMETHOD.
-
-  METHOD diff_zal_items.
-    rv_diff = abap_false.
-  ENDMETHOD.
-ENDCLASS.
-
-CLASS lcl_correction_builder DEFINITION.
-  PUBLIC SECTION.
-    METHODS build
-      IMPORTING is_old TYPE zcl_ksef_found_xml_service=>ty_invoice
-                is_new TYPE zcl_ksef_found_xml_service=>ty_invoice
-      RETURNING VALUE(rs_invoice) TYPE zcl_ksef_found_xml_service=>ty_invoice.
-ENDCLASS.
-
-CLASS lcl_correction_builder IMPLEMENTATION.
-  METHOD build.
-    rs_invoice = is_new.
-  ENDMETHOD.
-ENDCLASS.
-
-CLASS lcl_renderer DEFINITION.
-  PUBLIC SECTION.
-    METHODS render
-      IMPORTING is_invoice TYPE zcl_ksef_found_xml_service=>ty_invoice
-      RETURNING VALUE(rv_xml) TYPE string.
-ENDCLASS.
-
-CLASS lcl_renderer IMPLEMENTATION.
-  METHOD render.
-    CLEAR rv_xml.
-  ENDMETHOD.
-ENDCLASS.
-
-CLASS lcl_validator DEFINITION.
-  PUBLIC SECTION.
-    METHODS validate
-      IMPORTING iv_xml TYPE string
-      RETURNING VALUE(rt_messages) TYPE zkstg_t_message.
-ENDCLASS.
-
-CLASS lcl_validator IMPLEMENTATION.
-  METHOD validate.
-    CLEAR rt_messages.
-  ENDMETHOD.
 ENDCLASS.
