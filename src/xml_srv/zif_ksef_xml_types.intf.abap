@@ -17,6 +17,32 @@ INTERFACE zif_ksef_xml_types
     tt_xml_result TYPE STANDARD TABLE OF ty_xml_result WITH KEY ksef_id.
 
   TYPES:
+    ty_diff_mode TYPE c LENGTH 11.
+
+  CONSTANTS:
+    gc_diff_mode_full        TYPE ty_diff_mode VALUE 'FULL',
+    gc_diff_mode_totals_only TYPE ty_diff_mode VALUE 'TOTALS_ONLY'.
+
+  TYPES:
+    ty_diff_key TYPE string,
+    tt_diff_keys TYPE STANDARD TABLE OF ty_diff_key WITH EMPTY KEY.
+
+  TYPES:
+    BEGIN OF ty_diff_result,
+      changed_items         TYPE abap_bool,
+      changed_zal_items     TYPE abap_bool,
+      changed_parties       TYPE abap_bool,
+      changed_podmiot1      TYPE abap_bool,
+      changed_podmiot2      TYPE abap_bool,
+      changed_podmiot3      TYPE abap_bool,
+      changed_amounts       TYPE abap_bool,
+      changed_totals        TYPE abap_bool,
+      changed_item_keys     TYPE tt_diff_keys,
+      changed_zal_item_keys TYPE tt_diff_keys,
+      changed_podmiot3_keys TYPE tt_diff_keys,
+    END OF ty_diff_result.
+
+  TYPES:
     BEGIN OF ty_invoice_header,
       ksef_id TYPE zlx_ksef_id,
     END OF ty_invoice_header.
