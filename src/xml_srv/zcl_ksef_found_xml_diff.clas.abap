@@ -9,96 +9,93 @@ CLASS zcl_ksef_found_xml_diff DEFINITION
     METHODS diff_invoice
       IMPORTING is_old              TYPE zif_ksef_xml_types=>ty_invoice
                 is_new              TYPE zif_ksef_xml_types=>ty_invoice
-                iv_compare_mode     TYPE zif_ksef_xml_types=>ty_diff_mode
-                  DEFAULT zif_ksef_xml_types=>gc_diff_mode_full
+                iv_compare_mode     TYPE zif_ksef_xml_types=>ty_diff_mode DEFAULT zif_ksef_xml_types=>gc_diff_mode_full
                 iv_amount_tolerance TYPE decfloat34 DEFAULT gc_amount_tolerance_default
-      RETURNING VALUE(rs_diff) TYPE zif_ksef_xml_types=>ty_diff_result.
+      RETURNING VALUE(rs_diff)      TYPE zif_ksef_xml_types=>ty_diff_result.
 
     METHODS diff_podmiot
-      IMPORTING is_old TYPE zif_ksef_xml_types=>ty_podmiot
-                is_new TYPE zif_ksef_xml_types=>ty_podmiot
+      IMPORTING is_old         TYPE zif_ksef_xml_types=>ty_podmiot
+                is_new         TYPE zif_ksef_xml_types=>ty_podmiot
       RETURNING VALUE(rv_diff) TYPE abap_bool.
 
     METHODS diff_items
-      IMPORTING it_old TYPE zif_ksef_xml_types=>tt_invoice_items
-                it_new TYPE zif_ksef_xml_types=>tt_invoice_items
-                iv_compare_mode TYPE zif_ksef_xml_types=>ty_diff_mode
-                  DEFAULT zif_ksef_xml_types=>gc_diff_mode_full
+      IMPORTING it_old              TYPE zif_ksef_xml_types=>tt_invoice_items
+                it_new              TYPE zif_ksef_xml_types=>tt_invoice_items
+                iv_compare_mode     TYPE zif_ksef_xml_types=>ty_diff_mode DEFAULT zif_ksef_xml_types=>gc_diff_mode_full
                 iv_amount_tolerance TYPE decfloat34 DEFAULT gc_amount_tolerance_default
-      RETURNING VALUE(rv_diff) TYPE abap_bool.
+      RETURNING VALUE(rv_diff)      TYPE abap_bool.
 
     METHODS diff_zal_items
-      IMPORTING it_old TYPE zif_ksef_xml_types=>tt_zal_items
-                it_new TYPE zif_ksef_xml_types=>tt_zal_items
-                iv_compare_mode TYPE zif_ksef_xml_types=>ty_diff_mode
-                  DEFAULT zif_ksef_xml_types=>gc_diff_mode_full
+      IMPORTING it_old              TYPE zif_ksef_xml_types=>tt_zal_items
+                it_new              TYPE zif_ksef_xml_types=>tt_zal_items
+                iv_compare_mode     TYPE zif_ksef_xml_types=>ty_diff_mode DEFAULT zif_ksef_xml_types=>gc_diff_mode_full
                 iv_amount_tolerance TYPE decfloat34 DEFAULT gc_amount_tolerance_default
-      RETURNING VALUE(rv_diff) TYPE abap_bool.
+      RETURNING VALUE(rv_diff)      TYPE abap_bool.
 
   PRIVATE SECTION.
     METHODS normalize_text
-      IMPORTING iv_value TYPE string
+      IMPORTING iv_value        TYPE string
       RETURNING VALUE(rv_value) TYPE string.
 
     METHODS normalize_amount
-      IMPORTING iv_value TYPE string
+      IMPORTING iv_value        TYPE string
       RETURNING VALUE(rv_value) TYPE decfloat34.
 
     METHODS compare_podmiot_struct
-      IMPORTING is_old TYPE zif_ksef_xml_types=>ty_podmiot
-                is_new TYPE zif_ksef_xml_types=>ty_podmiot
+      IMPORTING is_old         TYPE zif_ksef_xml_types=>ty_podmiot
+                is_new         TYPE zif_ksef_xml_types=>ty_podmiot
       RETURNING VALUE(rv_diff) TYPE abap_bool.
 
     METHODS compare_item_struct
-      IMPORTING is_old TYPE zif_ksef_xml_types=>ty_invoice_item
-                is_new TYPE zif_ksef_xml_types=>ty_invoice_item
-                iv_compare_mode TYPE zif_ksef_xml_types=>ty_diff_mode
-                iv_tolerance    TYPE decfloat34
+      IMPORTING is_old             TYPE zif_ksef_xml_types=>ty_invoice_item
+                is_new             TYPE zif_ksef_xml_types=>ty_invoice_item
+                iv_compare_mode    TYPE zif_ksef_xml_types=>ty_diff_mode
+                iv_tolerance       TYPE decfloat34
       CHANGING  cv_changed_amounts TYPE abap_bool
-      RETURNING VALUE(rv_diff) TYPE abap_bool.
+      RETURNING VALUE(rv_diff)     TYPE abap_bool.
 
     METHODS compare_zal_item_struct
-      IMPORTING is_old TYPE zif_ksef_xml_types=>ty_zal_item
-                is_new TYPE zif_ksef_xml_types=>ty_zal_item
-                iv_compare_mode TYPE zif_ksef_xml_types=>ty_diff_mode
-                iv_tolerance    TYPE decfloat34
+      IMPORTING is_old             TYPE zif_ksef_xml_types=>ty_zal_item
+                is_new             TYPE zif_ksef_xml_types=>ty_zal_item
+                iv_compare_mode    TYPE zif_ksef_xml_types=>ty_diff_mode
+                iv_tolerance       TYPE decfloat34
       CHANGING  cv_changed_amounts TYPE abap_bool
-      RETURNING VALUE(rv_diff) TYPE abap_bool.
+      RETURNING VALUE(rv_diff)     TYPE abap_bool.
 
     METHODS compare_items_detail
-      IMPORTING it_old TYPE zif_ksef_xml_types=>tt_invoice_items
-                it_new TYPE zif_ksef_xml_types=>tt_invoice_items
-                iv_compare_mode TYPE zif_ksef_xml_types=>ty_diff_mode
-                iv_tolerance    TYPE decfloat34
-      CHANGING  ct_changed_keys TYPE zif_ksef_xml_types=>tt_diff_keys
+      IMPORTING it_old             TYPE zif_ksef_xml_types=>tt_invoice_items
+                it_new             TYPE zif_ksef_xml_types=>tt_invoice_items
+                iv_compare_mode    TYPE zif_ksef_xml_types=>ty_diff_mode
+                iv_tolerance       TYPE decfloat34
+      CHANGING  ct_changed_keys    TYPE zif_ksef_xml_types=>tt_diff_keys
                 cv_changed_amounts TYPE abap_bool
-      RETURNING VALUE(rv_diff) TYPE abap_bool.
+      RETURNING VALUE(rv_diff)     TYPE abap_bool.
 
     METHODS compare_zal_items_detail
-      IMPORTING it_old TYPE zif_ksef_xml_types=>tt_zal_items
-                it_new TYPE zif_ksef_xml_types=>tt_zal_items
-                iv_compare_mode TYPE zif_ksef_xml_types=>ty_diff_mode
-                iv_tolerance    TYPE decfloat34
-      CHANGING  ct_changed_keys TYPE zif_ksef_xml_types=>tt_diff_keys
+      IMPORTING it_old             TYPE zif_ksef_xml_types=>tt_zal_items
+                it_new             TYPE zif_ksef_xml_types=>tt_zal_items
+                iv_compare_mode    TYPE zif_ksef_xml_types=>ty_diff_mode
+                iv_tolerance       TYPE decfloat34
+      CHANGING  ct_changed_keys    TYPE zif_ksef_xml_types=>tt_diff_keys
                 cv_changed_amounts TYPE abap_bool
-      RETURNING VALUE(rv_diff) TYPE abap_bool.
+      RETURNING VALUE(rv_diff)     TYPE abap_bool.
 
     METHODS compare_podmiot3_detail
-      IMPORTING it_old TYPE zif_ksef_xml_types=>tt_podmiot
-                it_new TYPE zif_ksef_xml_types=>tt_podmiot
+      IMPORTING it_old          TYPE zif_ksef_xml_types=>tt_podmiot
+                it_new          TYPE zif_ksef_xml_types=>tt_podmiot
       CHANGING  ct_changed_keys TYPE zif_ksef_xml_types=>tt_diff_keys
-      RETURNING VALUE(rv_diff) TYPE abap_bool.
+      RETURNING VALUE(rv_diff)  TYPE abap_bool.
 
     METHODS get_item_key
-      IMPORTING is_item TYPE zif_ksef_xml_types=>ty_invoice_item
+      IMPORTING is_item       TYPE zif_ksef_xml_types=>ty_invoice_item
       RETURNING VALUE(rv_key) TYPE string.
 
     METHODS get_zal_item_key
-      IMPORTING is_item TYPE zif_ksef_xml_types=>ty_zal_item
+      IMPORTING is_item       TYPE zif_ksef_xml_types=>ty_zal_item
       RETURNING VALUE(rv_key) TYPE string.
 
     METHODS get_podmiot3_key
-      IMPORTING is_podmiot TYPE zif_ksef_xml_types=>ty_podmiot
+      IMPORTING is_podmiot    TYPE zif_ksef_xml_types=>ty_podmiot
       RETURNING VALUE(rv_key) TYPE string.
 ENDCLASS.
 
@@ -106,41 +103,31 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
   METHOD diff_invoice.
     CLEAR rs_diff.
 
-    rs_diff-changed_podmiot1 = me->diff_podmiot( is_old-podmiot1
-                                                is_new-podmiot1 ).
-    rs_diff-changed_podmiot2 = me->diff_podmiot( is_old-podmiot2
-                                                is_new-podmiot2 ).
-    rs_diff-changed_podmiot3 = me->compare_podmiot3_detail(
-      EXPORTING
-        it_old = is_old-podmiot3
-        it_new = is_new-podmiot3
-      CHANGING
-        ct_changed_keys = rs_diff-changed_podmiot3_keys ).
+    rs_diff-changed_podmiot1 = me->diff_podmiot( is_old = is_old-podmiot1
+                                                 is_new = is_new-podmiot1 ).
+    rs_diff-changed_podmiot2 = me->diff_podmiot( is_old = is_old-podmiot2
+                                                 is_new = is_new-podmiot2 ).
+    rs_diff-changed_podmiot3 = me->compare_podmiot3_detail( EXPORTING it_old          = is_old-podmiot3
+                                                                      it_new          = is_new-podmiot3
+                                                            CHANGING  ct_changed_keys = rs_diff-changed_podmiot3_keys ).
 
-    rs_diff-changed_parties = xsdbool(
-      rs_diff-changed_podmiot1 = abap_true
-      OR rs_diff-changed_podmiot2 = abap_true
-      OR rs_diff-changed_podmiot3 = abap_true ).
+    rs_diff-changed_parties = xsdbool( rs_diff-changed_podmiot1 = abap_true
+                                    OR rs_diff-changed_podmiot2 = abap_true
+                                    OR rs_diff-changed_podmiot3 = abap_true ).
 
-    rs_diff-changed_items = me->compare_items_detail(
-      EXPORTING
-        it_old          = is_old-items
-        it_new          = is_new-items
-        iv_compare_mode = iv_compare_mode
-        iv_tolerance    = iv_amount_tolerance
-      CHANGING
-        ct_changed_keys = rs_diff-changed_item_keys
-        cv_changed_amounts = rs_diff-changed_amounts ).
+    rs_diff-changed_items = me->compare_items_detail( EXPORTING it_old             = is_old-items
+                                                                it_new             = is_new-items
+                                                                iv_compare_mode    = iv_compare_mode
+                                                                iv_tolerance       = iv_amount_tolerance
+                                                      CHANGING  ct_changed_keys    = rs_diff-changed_item_keys
+                                                                cv_changed_amounts = rs_diff-changed_amounts ).
 
-    rs_diff-changed_zal_items = me->compare_zal_items_detail(
-      EXPORTING
-        it_old          = is_old-zal_items
-        it_new          = is_new-zal_items
-        iv_compare_mode = iv_compare_mode
-        iv_tolerance    = iv_amount_tolerance
-      CHANGING
-        ct_changed_keys = rs_diff-changed_zal_item_keys
-        cv_changed_amounts = rs_diff-changed_amounts ).
+    rs_diff-changed_zal_items = me->compare_zal_items_detail( EXPORTING it_old             = is_old-zal_items
+                                                                        it_new             = is_new-zal_items
+                                                                        iv_compare_mode    = iv_compare_mode
+                                                                        iv_tolerance       = iv_amount_tolerance
+                                                              CHANGING  ct_changed_keys    = rs_diff-changed_zal_item_keys
+                                                                        cv_changed_amounts = rs_diff-changed_amounts ).
 
     rs_diff-changed_totals = rs_diff-changed_amounts.
   ENDMETHOD.
@@ -154,30 +141,24 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
     DATA lt_changed_keys TYPE zif_ksef_xml_types=>tt_diff_keys.
     DATA lv_changed_amounts TYPE abap_bool.
 
-    rv_diff = me->compare_items_detail(
-      EXPORTING
-        it_old          = it_old
-        it_new          = it_new
-        iv_compare_mode = iv_compare_mode
-        iv_tolerance    = iv_amount_tolerance
-      CHANGING
-        ct_changed_keys = lt_changed_keys
-        cv_changed_amounts = lv_changed_amounts ).
+    rv_diff = me->compare_items_detail( EXPORTING it_old             = it_old
+                                                  it_new             = it_new
+                                                  iv_compare_mode    = iv_compare_mode
+                                                  iv_tolerance       = iv_amount_tolerance
+                                        CHANGING  ct_changed_keys    = lt_changed_keys
+                                                  cv_changed_amounts = lv_changed_amounts ).
   ENDMETHOD.
 
   METHOD diff_zal_items.
     DATA lt_changed_keys TYPE zif_ksef_xml_types=>tt_diff_keys.
     DATA lv_changed_amounts TYPE abap_bool.
 
-    rv_diff = me->compare_zal_items_detail(
-      EXPORTING
-        it_old          = it_old
-        it_new          = it_new
-        iv_compare_mode = iv_compare_mode
-        iv_tolerance    = iv_amount_tolerance
-      CHANGING
-        ct_changed_keys = lt_changed_keys
-        cv_changed_amounts = lv_changed_amounts ).
+    rv_diff = me->compare_zal_items_detail( EXPORTING it_old             = it_old
+                                                      it_new             = it_new
+                                                      iv_compare_mode    = iv_compare_mode
+                                                      iv_tolerance       = iv_amount_tolerance
+                                            CHANGING  ct_changed_keys    = lt_changed_keys
+                                                      cv_changed_amounts = lv_changed_amounts ).
   ENDMETHOD.
 
   METHOD normalize_text.
@@ -237,19 +218,19 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
 
     DATA lt_amount_fields TYPE STANDARD TABLE OF string WITH EMPTY KEY.
     lt_amount_fields = VALUE #(
-      ( 'P_8A' )
-      ( 'P_8B' )
-      ( 'P_9A' )
-      ( 'P_9B' )
-      ( 'P_10' )
-      ( 'P_11' )
-      ( 'P_11A' )
-      ( 'P_11VAT' )
-      ( 'P_12' )
-      ( 'P_12_XII' )
-      ( 'P_12_ZAL_15' )
-      ( 'KWOTAAKCYZY' )
-      ( 'KURSWALUTY' ) ).
+      ( |P_8A| )
+      ( |P_8B| )
+      ( |P_9A| )
+      ( |P_9B| )
+      ( |P_10| )
+      ( |P_11| )
+      ( |P_11A| )
+      ( |P_11VAT| )
+      ( |P_12| )
+      ( |P_12_XII| )
+      ( |P_12_ZAL_15| )
+      ( |KWOTAAKCYZY| )
+      ( |KURSWALUTY| ) ).
 
     DATA(lo_desc) = CAST cl_abap_structdescr( cl_abap_structdescr=>describe_by_data( is_old ) ).
 
@@ -291,15 +272,15 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
 
     DATA lt_amount_fields TYPE STANDARD TABLE OF string WITH EMPTY KEY.
     lt_amount_fields = VALUE #(
-      ( 'P_8AZ' )
-      ( 'P_8BZ' )
-      ( 'P_9AZ' )
-      ( 'P_11NETTOZ' )
-      ( 'P_11VATZ' )
-      ( 'P_12Z' )
-      ( 'P_12Z_XII' )
-      ( 'P_12Z_ZAL_15' )
-      ( 'KWOTAAKCYZYZ' ) ).
+      ( |P_8AZ| )
+      ( |P_8BZ| )
+      ( |P_9AZ| )
+      ( |P_11NETTOZ| )
+      ( |P_11VATZ| )
+      ( |P_12Z| )
+      ( |P_12Z_XII| )
+      ( |P_12Z_ZAL_15| )
+      ( |KWOTAAKCYZYZ| ) ).
 
     DATA(lo_desc) = CAST cl_abap_structdescr( cl_abap_structdescr=>describe_by_data( is_old ) ).
 
@@ -392,13 +373,11 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
           RETURN.
         ENDIF.
 
-        IF me->compare_item_struct(
-             is_old          = ls_old
-             is_new          = ls_new
-             iv_compare_mode = iv_compare_mode
-             iv_tolerance    = iv_tolerance
-             CHANGING
-               cv_changed_amounts = cv_changed_amounts ) = abap_true.
+        IF me->compare_item_struct( EXPORTING is_old             = ls_old
+                                              is_new             = ls_new
+                                              iv_compare_mode    = iv_compare_mode
+                                              iv_tolerance       = iv_tolerance
+                                    CHANGING  cv_changed_amounts = cv_changed_amounts ) = abap_true.
           rv_diff = abap_true.
           APPEND |INDEX:{ sy-index }| TO ct_changed_keys.
           RETURN.
@@ -416,13 +395,11 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
         RETURN.
       ENDIF.
 
-      IF me->compare_item_struct(
-           is_old          = <ls_old_map>-item
-           is_new          = <ls_new_map>-item
-           iv_compare_mode = iv_compare_mode
-           iv_tolerance    = iv_tolerance
-           CHANGING
-             cv_changed_amounts = cv_changed_amounts ) = abap_true.
+      IF me->compare_item_struct( EXPORTING is_old             = <ls_old_map>-item
+                                            is_new             = <ls_new_map>-item
+                                            iv_compare_mode    = iv_compare_mode
+                                            iv_tolerance       = iv_tolerance
+                                  CHANGING  cv_changed_amounts = cv_changed_amounts ) = abap_true.
         rv_diff = abap_true.
         APPEND <ls_new_map>-key TO ct_changed_keys.
         RETURN.
@@ -430,7 +407,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
     ENDLOOP.
 
     LOOP AT lt_old_map ASSIGNING FIELD-SYMBOL(<ls_old_remaining>).
-      IF line_exists( lt_new_map[ key = <ls_old_remaining>-key ] ) = abap_false.
+      IF NOT line_exists( lt_new_map[ key = <ls_old_remaining>-key ] ).
         rv_diff = abap_true.
         APPEND <ls_old_remaining>-key TO ct_changed_keys.
         RETURN.
@@ -494,13 +471,11 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
           RETURN.
         ENDIF.
 
-        IF me->compare_zal_item_struct(
-             is_old          = ls_old
-             is_new          = ls_new
-             iv_compare_mode = iv_compare_mode
-             iv_tolerance    = iv_tolerance
-             CHANGING
-               cv_changed_amounts = cv_changed_amounts ) = abap_true.
+        IF me->compare_zal_item_struct( EXPORTING is_old             = ls_old
+                                                  is_new             = ls_new
+                                                  iv_compare_mode    = iv_compare_mode
+                                                  iv_tolerance       = iv_tolerance
+                                       CHANGING   cv_changed_amounts = cv_changed_amounts ) = abap_true.
           rv_diff = abap_true.
           APPEND |INDEX:{ sy-index }| TO ct_changed_keys.
           RETURN.
@@ -518,13 +493,11 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
         RETURN.
       ENDIF.
 
-      IF me->compare_zal_item_struct(
-           is_old          = <ls_old_map>-item
-           is_new          = <ls_new_map>-item
-           iv_compare_mode = iv_compare_mode
-           iv_tolerance    = iv_tolerance
-           CHANGING
-             cv_changed_amounts = cv_changed_amounts ) = abap_true.
+      IF me->compare_zal_item_struct( EXPORTING is_old             = <ls_old_map>-item
+                                                is_new             = <ls_new_map>-item
+                                                iv_compare_mode    = iv_compare_mode
+                                                iv_tolerance       = iv_tolerance
+                                      CHANGING  cv_changed_amounts = cv_changed_amounts ) = abap_true.
         rv_diff = abap_true.
         APPEND <ls_new_map>-key TO ct_changed_keys.
         RETURN.
@@ -532,7 +505,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
     ENDLOOP.
 
     LOOP AT lt_old_map ASSIGNING FIELD-SYMBOL(<ls_old_remaining>).
-      IF line_exists( lt_new_map[ key = <ls_old_remaining>-key ] ) = abap_false.
+      IF NOT line_exists( lt_new_map[ key = <ls_old_remaining>-key ] ).
         rv_diff = abap_true.
         APPEND <ls_old_remaining>-key TO ct_changed_keys.
         RETURN.
@@ -624,7 +597,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
     ENDLOOP.
 
     LOOP AT lt_old_map ASSIGNING FIELD-SYMBOL(<ls_old_remaining>).
-      IF line_exists( lt_new_map[ key = <ls_old_remaining>-key ] ) = abap_false.
+      IF NOT line_exists( lt_new_map[ key = <ls_old_remaining>-key ] ).
         rv_diff = abap_true.
         APPEND <ls_old_remaining>-key TO ct_changed_keys.
         RETURN.

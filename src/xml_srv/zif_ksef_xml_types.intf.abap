@@ -24,7 +24,7 @@ INTERFACE zif_ksef_xml_types
     gc_diff_mode_totals_only TYPE ty_diff_mode VALUE 'TOTALS_ONLY'.
 
   TYPES:
-    ty_diff_key TYPE string,
+    ty_diff_key  TYPE string,
     tt_diff_keys TYPE STANDARD TABLE OF ty_diff_key WITH EMPTY KEY.
 
   TYPES:
@@ -48,7 +48,7 @@ INTERFACE zif_ksef_xml_types
     END OF ty_invoice_header.
 
   TYPES:
-    ty_invoice_item TYPE zksef_s_item,
+    ty_invoice_item  TYPE zksef_s_item,
     tt_invoice_items TYPE STANDARD TABLE OF ty_invoice_item WITH EMPTY KEY.
 
   TYPES:
@@ -56,7 +56,7 @@ INTERFACE zif_ksef_xml_types
     tt_podmiot TYPE STANDARD TABLE OF ty_podmiot WITH EMPTY KEY.
 
   TYPES:
-    ty_zal_item TYPE zlx_ksef_zal_items,
+    ty_zal_item  TYPE zlx_ksef_zal_items,
     tt_zal_items TYPE STANDARD TABLE OF ty_zal_item WITH EMPTY KEY.
 
   TYPES:
