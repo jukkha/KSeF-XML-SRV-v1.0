@@ -5,7 +5,7 @@ CLASS zcl_ksef_found_xml_service DEFINITION
 
   PUBLIC SECTION.
 
-    TYPES:
+     TYPES:
       BEGIN OF ty_xml_request,
         ksef_id TYPE zlx_ksef_id,
       END OF ty_xml_request,
@@ -20,18 +20,7 @@ CLASS zcl_ksef_found_xml_service DEFINITION
       END OF ty_xml_result,
       tt_xml_result TYPE STANDARD TABLE OF ty_xml_result WITH KEY ksef_id.
 
-    METHODS constructor.
-
-    METHODS create_and_validate_xmls
-      IMPORTING it_ksef_ids TYPE zkstg_t_inv_key
-                io_logger   TYPE REF TO zif_ksef_log_manager
-      RETURNING VALUE(rt_results) TYPE tt_xml_result
-      RAISING   zcx_ksef_xml_error.
-
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-
-    TYPES:
+       TYPES:
       BEGIN OF ty_invoice_header,
         ksef_id TYPE zlx_ksef_id,
       END OF ty_invoice_header.
@@ -69,6 +58,17 @@ CLASS zcl_ksef_found_xml_service DEFINITION
         ksef_id TYPE zlx_ksef_id,
       END OF ty_repo_invoice,
       tt_repo_invoices TYPE STANDARD TABLE OF ty_repo_invoice WITH EMPTY KEY.
+
+    METHODS constructor.
+
+    METHODS create_and_validate_xmls
+      IMPORTING it_ksef_ids TYPE zkstg_t_inv_key
+                io_logger   TYPE REF TO zif_ksef_log_manager
+      RETURNING VALUE(rt_results) TYPE tt_xml_result
+      RAISING   zcx_ksef_xml_error.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 
     DATA mo_repository         TYPE REF TO zcl_ksef_found_xml_repository.
     DATA mo_assembler          TYPE REF TO zcl_ksef_found_xml_assembler.

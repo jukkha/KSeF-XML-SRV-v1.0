@@ -3,7 +3,7 @@ CLASS zcl_ksef_found_xml_reader DEFINITION
   FINAL
   CREATE PUBLIC .
 
-  PUBLIC SECTION.
+   PUBLIC SECTION.
     METHODS read_podmiot
       IMPORTING iv_xml     TYPE string
                 iv_tagname TYPE string
