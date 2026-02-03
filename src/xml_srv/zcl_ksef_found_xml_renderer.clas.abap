@@ -5,7 +5,7 @@ CLASS zcl_ksef_found_xml_renderer DEFINITION
 
   PUBLIC SECTION.
     METHODS render
-      IMPORTING is_invoice TYPE zcl_ksef_found_xml_service=>ty_invoice
+      IMPORTING is_invoice TYPE zif_ksef_xml_types=>ty_invoice
       RETURNING VALUE(rv_xml) TYPE string.
 ENDCLASS.
 

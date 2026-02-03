@@ -6,7 +6,7 @@ CLASS zcl_ksef_found_xml_repository DEFINITION
   PUBLIC SECTION.
     METHODS read_batch
       IMPORTING it_ksef_ids TYPE zkstg_t_inv_key
-      RETURNING VALUE(rt_invoices) TYPE zcl_ksef_found_xml_service=>tt_repo_invoices.
+      RETURNING VALUE(rt_invoices) TYPE zif_ksef_xml_types=>tt_repo_invoices.
 ENDCLASS.
 
 CLASS zcl_ksef_found_xml_repository IMPLEMENTATION.

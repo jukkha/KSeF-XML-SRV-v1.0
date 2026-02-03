@@ -7,19 +7,19 @@ CLASS zcl_ksef_found_xml_reader DEFINITION
     METHODS read_podmiot
       IMPORTING iv_xml     TYPE string
                 iv_tagname TYPE string
-      RETURNING VALUE(rs_podmiot) TYPE zcl_ksef_found_xml_service=>ty_podmiot.
+      RETURNING VALUE(rs_podmiot) TYPE zif_ksef_xml_types=>ty_podmiot.
 
     METHODS read_podmiot3_list
       IMPORTING iv_xml TYPE string
-      RETURNING VALUE(rt_podmiot) TYPE zcl_ksef_found_xml_service=>tt_podmiot.
+      RETURNING VALUE(rt_podmiot) TYPE zif_ksef_xml_types=>tt_podmiot.
 
     METHODS read_items
       IMPORTING iv_xml TYPE string
-      RETURNING VALUE(rt_items) TYPE zcl_ksef_found_xml_service=>tt_invoice_items.
+      RETURNING VALUE(rt_items) TYPE zif_ksef_xml_types=>tt_invoice_items.
 
     METHODS read_zal_items
       IMPORTING iv_xml TYPE string
-      RETURNING VALUE(rt_items) TYPE zcl_ksef_found_xml_service=>tt_zal_items.
+      RETURNING VALUE(rt_items) TYPE zif_ksef_xml_types=>tt_zal_items.
 
     METHODS read_simple_tag
       IMPORTING iv_xml     TYPE string
@@ -112,7 +112,7 @@ CLASS zcl_ksef_found_xml_reader IMPLEMENTATION.
 
     DATA: lv_name  TYPE string,
           lv_in_p3 TYPE abap_bool VALUE abap_false,
-          ls_p3    TYPE zcl_ksef_found_xml_service=>ty_podmiot.
+          ls_p3    TYPE zif_ksef_xml_types=>ty_podmiot.
 
     TRY.
         DO.
@@ -184,7 +184,7 @@ CLASS zcl_ksef_found_xml_reader IMPLEMENTATION.
     DATA lv_in_row TYPE abap_bool VALUE abap_false.
     DATA lv_name   TYPE string.
 
-    DATA ls_item TYPE zcl_ksef_found_xml_service=>ty_invoice_item.
+    DATA ls_item TYPE zif_ksef_xml_types=>ty_invoice_item.
 
     TRY.
         DO.
@@ -279,7 +279,7 @@ CLASS zcl_ksef_found_xml_reader IMPLEMENTATION.
     DATA lv_in_row TYPE abap_bool VALUE abap_false.
     DATA lv_name   TYPE string.
 
-    DATA ls_zitem TYPE zcl_ksef_found_xml_service=>ty_zal_item.
+    DATA ls_zitem TYPE zif_ksef_xml_types=>ty_zal_item.
 
     TRY.
         DO.
