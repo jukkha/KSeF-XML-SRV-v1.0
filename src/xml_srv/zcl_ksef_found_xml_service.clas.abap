@@ -37,21 +37,15 @@ CLASS zcl_ksef_found_xml_service DEFINITION
       END OF ty_invoice_header.
 
     TYPES:
-      BEGIN OF ty_invoice_item,
-        item_no TYPE posnr,
-      END OF ty_invoice_item,
+      ty_invoice_item TYPE zksef_s_item,
       tt_invoice_items TYPE STANDARD TABLE OF ty_invoice_item WITH EMPTY KEY.
 
     TYPES:
-      BEGIN OF ty_podmiot,
-        role TYPE string,
-      END OF ty_podmiot,
+      ty_podmiot TYPE zlx_ksef_podmiot,
       tt_podmiot TYPE STANDARD TABLE OF ty_podmiot WITH EMPTY KEY.
 
     TYPES:
-      BEGIN OF ty_zal_item,
-        item_no TYPE posnr,
-      END OF ty_zal_item,
+      ty_zal_item TYPE zlx_ksef_zal_items,
       tt_zal_items TYPE STANDARD TABLE OF ty_zal_item WITH EMPTY KEY.
 
     TYPES:
