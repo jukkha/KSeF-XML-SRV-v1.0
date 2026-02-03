@@ -370,7 +370,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
         IF lv_old_missing = abap_true OR lv_new_missing = abap_true.
           rv_diff = abap_true.
           APPEND |INDEX:{ sy-index }| TO ct_changed_keys.
-          RETURN.
+          CONTINUE.
         ENDIF.
 
         IF me->compare_item_struct( EXPORTING is_old             = ls_old
@@ -380,7 +380,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
                                     CHANGING  cv_changed_amounts = cv_changed_amounts ) = abap_true.
           rv_diff = abap_true.
           APPEND |INDEX:{ sy-index }| TO ct_changed_keys.
-          RETURN.
+          CONTINUE.
         ENDIF.
       ENDDO.
 
@@ -392,7 +392,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
       IF sy-subrc <> 0.
         rv_diff = abap_true.
         APPEND <ls_new_map>-key TO ct_changed_keys.
-        RETURN.
+        CONTINUE.
       ENDIF.
 
       IF me->compare_item_struct( EXPORTING is_old             = <ls_old_map>-item
@@ -402,7 +402,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
                                   CHANGING  cv_changed_amounts = cv_changed_amounts ) = abap_true.
         rv_diff = abap_true.
         APPEND <ls_new_map>-key TO ct_changed_keys.
-        RETURN.
+        CONTINUE.
       ENDIF.
     ENDLOOP.
 
@@ -410,7 +410,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
       IF NOT line_exists( lt_new_map[ key = <ls_old_remaining>-key ] ).
         rv_diff = abap_true.
         APPEND <ls_old_remaining>-key TO ct_changed_keys.
-        RETURN.
+        CONTINUE.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
@@ -468,7 +468,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
         IF lv_old_missing = abap_true OR lv_new_missing = abap_true.
           rv_diff = abap_true.
           APPEND |INDEX:{ sy-index }| TO ct_changed_keys.
-          RETURN.
+          CONTINUE.
         ENDIF.
 
         IF me->compare_zal_item_struct( EXPORTING is_old             = ls_old
@@ -478,7 +478,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
                                        CHANGING   cv_changed_amounts = cv_changed_amounts ) = abap_true.
           rv_diff = abap_true.
           APPEND |INDEX:{ sy-index }| TO ct_changed_keys.
-          RETURN.
+          CONTINUE.
         ENDIF.
       ENDDO.
 
@@ -490,7 +490,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
       IF sy-subrc <> 0.
         rv_diff = abap_true.
         APPEND <ls_new_map>-key TO ct_changed_keys.
-        RETURN.
+        CONTINUE.
       ENDIF.
 
       IF me->compare_zal_item_struct( EXPORTING is_old             = <ls_old_map>-item
@@ -500,7 +500,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
                                       CHANGING  cv_changed_amounts = cv_changed_amounts ) = abap_true.
         rv_diff = abap_true.
         APPEND <ls_new_map>-key TO ct_changed_keys.
-        RETURN.
+        CONTINUE.
       ENDIF.
     ENDLOOP.
 
@@ -508,7 +508,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
       IF NOT line_exists( lt_new_map[ key = <ls_old_remaining>-key ] ).
         rv_diff = abap_true.
         APPEND <ls_old_remaining>-key TO ct_changed_keys.
-        RETURN.
+        CONTINUE.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
@@ -566,14 +566,14 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
         IF lv_old_missing = abap_true OR lv_new_missing = abap_true.
           rv_diff = abap_true.
           APPEND |INDEX:{ sy-index }| TO ct_changed_keys.
-          RETURN.
+          CONTINUE.
         ENDIF.
 
         IF me->compare_podmiot_struct( is_old = ls_old
                                        is_new = ls_new ) = abap_true.
           rv_diff = abap_true.
           APPEND |INDEX:{ sy-index }| TO ct_changed_keys.
-          RETURN.
+          CONTINUE.
         ENDIF.
       ENDDO.
 
@@ -585,14 +585,14 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
       IF sy-subrc <> 0.
         rv_diff = abap_true.
         APPEND <ls_new_map>-key TO ct_changed_keys.
-        RETURN.
+        CONTINUE.
       ENDIF.
 
       IF me->compare_podmiot_struct( is_old = <ls_old_map>-podmiot
                                      is_new = <ls_new_map>-podmiot ) = abap_true.
         rv_diff = abap_true.
         APPEND <ls_new_map>-key TO ct_changed_keys.
-        RETURN.
+        CONTINUE.
       ENDIF.
     ENDLOOP.
 
@@ -600,7 +600,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
       IF NOT line_exists( lt_new_map[ key = <ls_old_remaining>-key ] ).
         rv_diff = abap_true.
         APPEND <ls_old_remaining>-key TO ct_changed_keys.
-        RETURN.
+        CONTINUE.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
