@@ -306,7 +306,51 @@ Forbidden:
 \- PRIVATE SECTION is allowed ONLY for implementation details used solely within the same class.
 \- Codex must check cross-class references before choosing visibility.
 
+\### ABAP 7.5 call syntax & expressions (STRICT)
 
+#### 7.5.1 Method calls: always use named parameters when ambiguous
+\- If a method has more than one IMPORTING parameter, always call it with named parameters.
+Example:
+me->compare_podmiot_struct(
+  is_old = <ls_old_map>-podmiot
+  is_new = <ls_new_map>-podmiot ).
+
+\-If a method has parameters of different kinds (e.g. IMPORTING + CHANGING / EXPORTING + CHANGING),
+always specify the parameter kind in the call (EXPORTING/IMPORTING/CHANGING/RECEIVING).
+Example:
+me->compare_zal_item_struct(
+  EXPORTING
+    is_old           = <ls_old_map>-item
+    is_new           = <ls_new_map>-item
+    iv_compare_mode  = iv_compare_mode
+    iv_tolerance     = iv_tolerance
+  CHANGING
+    cv_changed_amounts = cv_changed_amounts ).
+
+#### 7.5.2 VALUE table constructors: use explicit string literals for clarity
+\- When filling a table of string with non-obvious values, use explicit string templates in parentheses.
+Example:
+DATA lt_amount_fields TYPE STANDARD TABLE OF string WITH EMPTY KEY.
+lt_amount_fields = VALUE #(
+  ( |P_8AZ| )
+  ( |P_8BZ| )
+  ( |P_9AZ| )
+  ( |P_11NETTOZ| )
+  ( |P_11VATZ| )
+  ( |P_12Z| )
+  ( |P_12Z_XII| )
+  ( |P_12Z_ZAL_15| )
+  ( |KWOTAAKCYZYZ| ) ).
+
+#### 7.5.3 Expressions: LINE_EXISTS returns a boolean expression (not abap_bool variable)
+4) LINE_EXISTS( ... ) is a boolean expression.
+Do not assign or compare it like an abap_bool variable.
+Correct:
+IF line_exists( it_tab[ key = val ] ).
+  ...
+ENDIF.
+Incorrect:
+line_exists = abap_false.
 
 
 Always define keys for hashed/sorted tables.
