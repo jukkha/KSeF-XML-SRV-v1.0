@@ -5,25 +5,25 @@ CLASS zcl_ksef_found_xml_cor_builder DEFINITION
 
   PUBLIC SECTION.
     METHODS build
-      IMPORTING is_old TYPE zif_ksef_xml_types=>ty_invoice
-                is_new TYPE zif_ksef_xml_types=>ty_invoice
+      IMPORTING is_old            TYPE zif_ksef_xml_types=>ty_invoice
+                is_new            TYPE zif_ksef_xml_types=>ty_invoice
       RETURNING VALUE(rs_invoice) TYPE zif_ksef_xml_types=>ty_invoice.
 
   PRIVATE SECTION.
     METHODS build_podmiot2k
-      IMPORTING is_old  TYPE zif_ksef_xml_types=>ty_invoice
-                is_diff TYPE zif_ksef_xml_types=>ty_diff_result
+      IMPORTING is_old              TYPE zif_ksef_xml_types=>ty_invoice
+                is_diff             TYPE zif_ksef_xml_types=>ty_diff_result
       RETURNING VALUE(rt_podmiot2k) TYPE zif_ksef_xml_types=>tt_podmiot.
 
     METHODS build_item_corrections
-      IMPORTING is_old         TYPE zif_ksef_xml_types=>ty_invoice
-                is_new         TYPE zif_ksef_xml_types=>ty_invoice
+      IMPORTING is_old          TYPE zif_ksef_xml_types=>ty_invoice
+                is_new          TYPE zif_ksef_xml_types=>ty_invoice
                 it_changed_keys TYPE zif_ksef_xml_types=>tt_diff_keys
       RETURNING VALUE(rt_items) TYPE zif_ksef_xml_types=>tt_invoice_items.
 
     METHODS build_zal_item_corrections
-      IMPORTING is_old         TYPE zif_ksef_xml_types=>ty_invoice
-                is_new         TYPE zif_ksef_xml_types=>ty_invoice
+      IMPORTING is_old          TYPE zif_ksef_xml_types=>ty_invoice
+                is_new          TYPE zif_ksef_xml_types=>ty_invoice
                 it_changed_keys TYPE zif_ksef_xml_types=>tt_diff_keys
       RETURNING VALUE(rt_items) TYPE zif_ksef_xml_types=>tt_zal_items.
 
@@ -40,7 +40,7 @@ CLASS zcl_ksef_found_xml_cor_builder DEFINITION
       RETURNING VALUE(rv_key) TYPE string.
 
     METHODS get_index_from_key
-      IMPORTING iv_key         TYPE string
+      IMPORTING iv_key          TYPE string
       RETURNING VALUE(rv_index) TYPE i.
 
     METHODS normalize_text
