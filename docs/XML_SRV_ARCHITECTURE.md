@@ -145,6 +145,8 @@ METHODS create_and_validate_xmls
     2) затем по очереди старые Podmiot3, но **только для тех индексов**, где Podmiot3_new отличается от Podmiot3_old,
        а если новый Podmiot3 отсутствует — старый можно добавить (как “removed/changed”).
   - `FaWiersz` и `ZamowienieWiersz`: если есть изменения, выводить пары (old+new) с `StanPrzed=1` у old.
+  - Correction Builder опирается **только** на результат diff engine (ключи/флаги),
+    не выполняет повторное сравнение и не добавляет пустые `*_K` секции.
 
 Эта логика у вас уже наметилась в `fill_pod2k`, `fill_items_kor`, `fill_zal_items_kor` — её стоит сгруппировать и покрыть тестами.
 
