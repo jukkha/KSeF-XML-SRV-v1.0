@@ -5,7 +5,7 @@ CLASS zcl_ksef_found_xml_assembler DEFINITION
 
   PUBLIC SECTION.
     METHODS assemble
-      IMPORTING is_repo_invoice TYPE zif_ksef_xml_types=>ty_repo_invoice
+      IMPORTING is_repo_invoice   TYPE zif_ksef_xml_types=>ty_repo_invoice
       RETURNING VALUE(rs_invoice) TYPE zif_ksef_xml_types=>ty_invoice.
 ENDCLASS.
 
