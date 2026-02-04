@@ -29,6 +29,18 @@
 #### A) `ZCL_KSEF_FOUND_DB_REPOSITORY`
 - Пакетные чтения: заголовки, позиции, партнёры, условия оплаты, ссылки на корректируемый документ, XML предыдущей версии и т.п.
 - Никакого XML/бизнес-правил — только CRUD/селекты/джойны.
+- Batch-reads for XML generation use **only batch selects** (no `SELECT SINGLE`).
+- Наборы данных читаются пакетно по `ksef_id` и включают:
+  - `ZLX_KSEF_OUT` (маппинг `ksef_id` → `docnum` + XML предыдущей версии),
+  - `VBRK` (документ-основание: `vbeln/bukrs/gjahr/belnr` и ключевые поля),
+  - `BKPF` (даты/валюта/курс по FI документу),
+  - `BSET` (налоговые суммы/базы),
+  - `BSEG` (сумма клиента `WRBTR`, `KOART='D'`),
+  - `BSEG` + `VBRK` + `ZLX_KSEF_OUT` (связь с корректируемым документом и `xml_old`),
+  - `T001` + `ADRC` (адрес продавца),
+  - `VBRP` (позиции),
+  - `KNA1` + `KNB1` (адрес покупателя и условия оплаты),
+  - `VBPA` + `KNA1` + `TPART` (Podmiot3 и роли).
 
 #### B) `ZCL_KSEF_FOUND_XML_SERVICE`
 - Генерация структур для XML (внутренний invoice model).
