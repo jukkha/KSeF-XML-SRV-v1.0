@@ -22,6 +22,12 @@ CLASS zcl_ksef_found_xml_service DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
 
+    TYPES ty_processing_mode TYPE c LENGTH 10.
+
+    CONSTANTS:
+      gc_processing_normal     TYPE ty_processing_mode VALUE 'NORMAL',
+      gc_processing_correction TYPE ty_processing_mode VALUE 'CORRECTION'.
+
     DATA mo_repository         TYPE REF TO zcl_ksef_found_xml_repository.
     DATA mo_assembler          TYPE REF TO zcl_ksef_found_xml_assembler.
     DATA mo_xml_reader         TYPE REF TO zcl_ksef_found_xml_reader.
@@ -39,6 +45,10 @@ CLASS zcl_ksef_found_xml_service DEFINITION
       IMPORTING iv_xml_old        TYPE string
                 is_header         TYPE zif_ksef_xml_types=>ty_invoice_header
       RETURNING VALUE(rs_invoice) TYPE zif_ksef_xml_types=>ty_invoice.
+
+    METHODS determine_processing_mode
+      IMPORTING is_invoice     TYPE zif_ksef_xml_types=>ty_invoice
+      RETURNING VALUE(rv_mode) TYPE ty_processing_mode.
 
     METHODS append_message
       IMPORTING iv_severity TYPE symsgty
@@ -93,6 +103,7 @@ CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
       RETURN.
     ENDIF.
 
+    " Partial success behavior: each ksef_id is processed independently and returned with its own result.
     DATA(lt_repo_invoices) = mo_repository->read_batch(
       EXPORTING
         it_ksef_ids = it_ksef_ids ).
@@ -223,96 +234,208 @@ CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
         iv_text       = 'Repository data loaded.' ).
     ENDIF.
 
-    DATA(ls_invoice) = mo_assembler->assemble(
-      EXPORTING
-        is_repo_invoice = is_repo_invoice ).
-
-    IF io_logger IS BOUND.
-      io_logger->add_msg(
-        iv_log_handle = lv_log_xml
-        iv_type       = 'I'
-        iv_text       = 'Invoice assembled.' ).
-    ENDIF.
-
     DATA(lv_is_correction) = abap_false.
     DATA(lv_has_diff) = abap_false.
-    DATA(ls_render_invoice) = ls_invoice.
+    DATA(lt_messages) = VALUE zif_ksef_xml_types=>tt_message( ).
 
-    IF ls_invoice-correction_context-xml_old IS NOT INITIAL.
-      lv_is_correction = abap_true.
+    TRY.
+        DATA(ls_invoice) = mo_assembler->assemble(
+          EXPORTING
+            is_repo_invoice = is_repo_invoice ).
+        DATA(lv_xml) TYPE string.
+        DATA(ls_render_invoice) TYPE zif_ksef_xml_types=>ty_invoice.
 
-      IF io_logger IS BOUND.
-        io_logger->add_msg(
-          iv_log_handle = lv_log_xml
-          iv_type       = 'I'
-          iv_text       = 'Correction mode detected; building old XML snapshot.' ).
-      ENDIF.
+        IF io_logger IS BOUND.
+          io_logger->add_msg(
+            iv_log_handle = lv_log_xml
+            iv_type       = 'I'
+            iv_text       = 'Invoice assembled.' ).
+        ENDIF.
 
-      DATA(ls_old_invoice) = me->build_old_invoice(
-        EXPORTING
-          iv_xml_old = ls_invoice-correction_context-xml_old
-          is_header  = ls_invoice-header ).
+        DATA(lv_mode) = me->determine_processing_mode(
+          EXPORTING
+            is_invoice = ls_invoice ).
 
-      DATA(ls_diff) = mo_diff_engine->diff_invoice(
-        EXPORTING
-          is_old = ls_old_invoice
-          is_new = ls_invoice ).
+        IF lv_mode = gc_processing_correction.
+          lv_is_correction = abap_true.
+          IF io_logger IS BOUND.
+            io_logger->add_msg(
+              iv_log_handle = lv_log_xml
+              iv_type       = 'I'
+              iv_text       = 'Processing mode: CORRECTION.' ).
+            io_logger->add_msg(
+              iv_log_handle = lv_log_xml
+              iv_type       = 'I'
+              iv_text       = 'Correction step: build old XML snapshot.' ).
+          ENDIF.
 
-      lv_has_diff = xsdbool(
-        ls_diff-changed_items = abap_true
-        OR ls_diff-changed_zal_items = abap_true
-        OR ls_diff-changed_parties = abap_true
-        OR ls_diff-changed_totals = abap_true ).
+          DATA(ls_old_invoice) = me->build_old_invoice(
+            EXPORTING
+              iv_xml_old = ls_invoice-correction_context-xml_old
+              is_header  = ls_invoice-header ).
 
-      IF io_logger IS BOUND.
-        io_logger->add_msg(
-          iv_log_handle = lv_log_xml
-          iv_type       = 'I'
-          iv_text       = COND string( WHEN lv_has_diff = abap_true
-                                        THEN 'Diff detected for correction.'
-                                        ELSE 'No diff detected for correction.' ) ).
-      ENDIF.
+          IF io_logger IS BOUND.
+            io_logger->add_msg(
+              iv_log_handle = lv_log_xml
+              iv_type       = 'I'
+              iv_text       = 'Correction step: diff old vs new invoice.' ).
+          ENDIF.
 
-      ls_render_invoice = mo_correction_builder->build(
-        EXPORTING
-          is_old = ls_old_invoice
-          is_new = ls_invoice ).
-    ENDIF.
+          DATA(ls_diff) = mo_diff_engine->diff_invoice(
+            EXPORTING
+              is_old = ls_old_invoice
+              is_new = ls_invoice ).
 
-    DATA(lv_xml) = mo_renderer->render(
-      EXPORTING
-        is_invoice = ls_render_invoice ).
+          lv_has_diff = xsdbool(
+            ls_diff-changed_items = abap_true
+            OR ls_diff-changed_zal_items = abap_true
+            OR ls_diff-changed_parties = abap_true
+            OR ls_diff-changed_totals = abap_true ).
 
-    IF io_logger IS BOUND.
-      io_logger->add_msg(
-        iv_log_handle = lv_log_xml
-        iv_type       = 'I'
-        iv_text       = 'XML rendered.' ).
-    ENDIF.
+          IF io_logger IS BOUND.
+            io_logger->add_msg(
+              iv_log_handle = lv_log_xml
+              iv_type       = 'I'
+              iv_text       = COND string( WHEN lv_has_diff = abap_true
+                                            THEN 'Correction step: diff detected.'
+                                            ELSE 'Correction step: no diff detected.' ) ).
+            io_logger->add_msg(
+              iv_log_handle = lv_log_xml
+              iv_type       = 'I'
+              iv_text       = 'Correction step: build correction structures.' ).
+          ENDIF.
 
-    DATA(lt_messages) = mo_validator->validate(
-      EXPORTING
-        iv_xml = lv_xml ).
+          ls_render_invoice = mo_correction_builder->build(
+            EXPORTING
+              is_old = ls_old_invoice
+              is_new = ls_invoice ).
 
-    IF io_logger IS BOUND.
-      LOOP AT lt_messages ASSIGNING FIELD-SYMBOL(<ls_message>).
-        io_logger->add_msg(
-          iv_log_handle = lv_log_xml
-          iv_type       = <ls_message>-severity
-          iv_text       = <ls_message>-text ).
-      ENDLOOP.
-    ENDIF.
+          lv_xml = mo_renderer->render(
+            EXPORTING
+              is_invoice = ls_render_invoice ).
+        ELSE.
+          IF io_logger IS BOUND.
+            io_logger->add_msg(
+              iv_log_handle = lv_log_xml
+              iv_type       = 'I'
+              iv_text       = 'Processing mode: NORMAL.' ).
+          ENDIF.
 
-    IF line_exists( lt_messages[ severity = 'E' ] ).
-      rs_result-status = 'E'.
-    ELSE.
-      rs_result-status = 'S'.
-      rs_result-xml_string = lv_xml.
-    ENDIF.
+          lv_xml = mo_renderer->render(
+            EXPORTING
+              is_invoice = ls_invoice ).
+        ENDIF.
+
+        IF lv_xml IS INITIAL.
+          me->append_message(
+            EXPORTING
+              iv_severity = 'E'
+              iv_code     = 'XML_RENDER_EMPTY'
+              iv_text     = 'Rendered XML is empty.'
+              iv_ksef_id  = is_repo_invoice-ksef_id
+            CHANGING
+              ct_messages = lt_messages ).
+          IF io_logger IS BOUND.
+            io_logger->add_msg(
+              iv_log_handle = lv_log_xml
+              iv_type       = 'E'
+              iv_text       = 'Rendered XML is empty.' ).
+          ENDIF.
+        ELSE.
+          IF io_logger IS BOUND.
+            io_logger->add_msg(
+              iv_log_handle = lv_log_xml
+              iv_type       = 'I'
+              iv_text       = 'XML rendered.' ).
+            io_logger->add_msg(
+              iv_log_handle = lv_log_xml
+              iv_type       = 'I'
+              iv_text       = 'Validation started.' ).
+          ENDIF.
+
+          lt_messages = mo_validator->validate(
+            EXPORTING
+              iv_xml = lv_xml ).
+
+          LOOP AT lt_messages ASSIGNING FIELD-SYMBOL(<ls_message>).
+            IF <ls_message>-ksef_id IS INITIAL.
+              <ls_message>-ksef_id = is_repo_invoice-ksef_id.
+            ENDIF.
+            IF io_logger IS BOUND.
+              io_logger->add_msg(
+                iv_log_handle = lv_log_xml
+                iv_type       = <ls_message>-severity
+                iv_text       = <ls_message>-text ).
+            ENDIF.
+          ENDLOOP.
+        ENDIF.
+
+        IF line_exists( lt_messages[ severity = 'E' ] ).
+          rs_result-status = 'E'.
+        ELSEIF lv_xml IS INITIAL.
+          rs_result-status = 'E'.
+        ELSE.
+          rs_result-status = 'S'.
+          rs_result-xml_string = lv_xml.
+        ENDIF.
+
+      CATCH zcx_ksef_xml_error INTO DATA(lx_xml).
+        rs_result-status = 'E'.
+        me->append_message(
+          EXPORTING
+            iv_severity = 'E'
+            iv_code     = 'XML_PROCESS_ERROR'
+            iv_text     = lx_xml->get_text( )
+            iv_ksef_id  = is_repo_invoice-ksef_id
+          CHANGING
+            ct_messages = lt_messages ).
+        IF io_logger IS BOUND.
+          io_logger->add_msg(
+            iv_log_handle = lv_log_overall
+            iv_type       = 'E'
+            iv_text       = lx_xml->get_text( ) ).
+          io_logger->add_msg(
+            iv_log_handle = lv_log_xml
+            iv_type       = 'E'
+            iv_text       = lx_xml->get_text( ) ).
+        ENDIF.
+      CATCH cx_root INTO DATA(lx_root).
+        rs_result-status = 'E'.
+        me->append_message(
+          EXPORTING
+            iv_severity = 'E'
+            iv_code     = 'XML_PROCESS_ERROR'
+            iv_text     = lx_root->get_text( )
+            iv_ksef_id  = is_repo_invoice-ksef_id
+          CHANGING
+            ct_messages = lt_messages ).
+        IF io_logger IS BOUND.
+          io_logger->add_msg(
+            iv_log_handle = lv_log_overall
+            iv_type       = 'E'
+            iv_text       = lx_root->get_text( ) ).
+          io_logger->add_msg(
+            iv_log_handle = lv_log_xml
+            iv_type       = 'E'
+            iv_text       = lx_root->get_text( ) ).
+        ENDIF.
+    ENDTRY.
 
     rs_result-messages = lt_messages.
     rs_result-is_correction = lv_is_correction.
     rs_result-has_diff = lv_has_diff.
+
+    IF rs_result-status IS INITIAL.
+      rs_result-status = 'E'.
+      me->append_message(
+        EXPORTING
+          iv_severity = 'E'
+          iv_code     = 'XML_PROCESS_FAILED'
+          iv_text     = 'XML processing finished without a final status.'
+          iv_ksef_id  = is_repo_invoice-ksef_id
+        CHANGING
+          ct_messages = rs_result-messages ).
+    ENDIF.
 
     IF io_logger IS BOUND.
       io_logger->add_msg(
@@ -345,6 +468,13 @@ CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
     rs_invoice-zal_items = mo_xml_reader->read_zal_items(
       EXPORTING
         iv_xml = iv_xml_old ).
+  ENDMETHOD.
+
+  METHOD determine_processing_mode.
+    rv_mode = gc_processing_normal.
+    IF is_invoice-correction_context-xml_old IS NOT INITIAL.
+      rv_mode = gc_processing_correction.
+    ENDIF.
   ENDMETHOD.
 
   METHOD append_message.
