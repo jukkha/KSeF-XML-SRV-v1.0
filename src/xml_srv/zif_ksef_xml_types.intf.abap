@@ -25,10 +25,12 @@ INTERFACE zif_ksef_xml_types
 
   TYPES:
     BEGIN OF ty_xml_result,
-      ksef_id    TYPE zlx_ksef_id,
-      xml_string TYPE string,
-      status     TYPE char1,
-      messages   TYPE tt_message,
+      ksef_id       TYPE zlx_ksef_id,
+      xml_string    TYPE string,
+      status        TYPE char1,
+      is_correction TYPE abap_bool,
+      has_diff      TYPE abap_bool,
+      messages      TYPE tt_message,
     END OF ty_xml_result,
     tt_xml_result TYPE STANDARD TABLE OF ty_xml_result WITH KEY ksef_id.
 
@@ -96,6 +98,7 @@ INTERFACE zif_ksef_xml_types
   TYPES:
     BEGIN OF ty_repo_invoice,
       ksef_id TYPE zlx_ksef_id,
+      xml_old TYPE string,
     END OF ty_repo_invoice,
     tt_repo_invoices TYPE STANDARD TABLE OF ty_repo_invoice WITH EMPTY KEY.
 

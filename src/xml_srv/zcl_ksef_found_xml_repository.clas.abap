@@ -12,5 +12,8 @@ ENDCLASS.
 CLASS zcl_ksef_found_xml_repository IMPLEMENTATION.
   METHOD read_batch.
     CLEAR rt_invoices.
+    LOOP AT it_ksef_ids INTO DATA(ls_ksef_id).
+      APPEND VALUE #( ksef_id = ls_ksef_id-ksef_id ) TO rt_invoices.
+    ENDLOOP.
   ENDMETHOD.
 ENDCLASS.

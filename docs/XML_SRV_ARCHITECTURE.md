@@ -243,7 +243,37 @@ Renderer (`ZCL_KSEF_FOUND_XML_RENDERER`) must produce **deterministic** XML outp
 - внутри XML service бросаем `ZCX_KSEF_XML_ERROR` (с `previous` и деталями).
 - наружу в orchestrator возвращаем per-invoice `messages`, чтобы UI мог показать без dump.
 
-### 8.1 Бизнес-валидация FA(3)
+### 8.1 Финальный pipeline XML Service (orchestrator flow)
+
+Text sequence diagram (single `ksef_id`):
+
+```
+UI/Orchestrator
+  -> ZCL_KSEF_FOUND_XML_SERVICE.create_xml
+     -> Repository.read_batch([ksef_id])
+     -> Assembler.assemble(repo_invoice)
+     -> [if correction_context-xml_old]
+          XML Reader.read_* (old XML -> invoice snapshot)
+          Diff.diff_invoice(old, new)
+          Correction Builder.build(old, new)
+     -> Renderer.render(invoice or correction invoice)
+     -> Validator.validate(xml)
+     -> Result (status/messages/xml_string/is_correction/has_diff)
+     -> BAL log KSEFOUT/OVERALL + KSEFOUT/XML (start/end/steps/errors)
+```
+
+Batch (`create_and_validate_xmls`) runs the same pipeline per `ksef_id` with partial success:
+
+```
+UI/Orchestrator
+  -> ZCL_KSEF_FOUND_XML_SERVICE.create_and_validate_xmls([ksef_id...])
+     -> Repository.read_batch(ids)
+     -> loop per ksef_id:
+          Assembler -> (Correction path optional) -> Renderer -> Validator
+          -> per-item result + per-item BAL logging
+```
+
+### 8.2 Бизнес-валидация FA(3)
 
 Бизнес-валидация выполняется в `ZCL_KSEF_FOUND_XML_VALIDATOR` и возвращает сообщения
 в `ZIF_KSEF_XML_TYPES=>tt_message`, который прокидывается в `tt_xml_result-messages`.
