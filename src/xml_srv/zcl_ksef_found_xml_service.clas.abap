@@ -31,21 +31,21 @@ CLASS zcl_ksef_found_xml_service DEFINITION
     DATA mo_validator          TYPE REF TO zcl_ksef_found_xml_validator.
 
     METHODS process_repo_invoice
-      IMPORTING is_repo_invoice TYPE zif_ksef_xml_types=>ty_repo_invoice
-                io_logger       TYPE REF TO zif_ksef_log_manager OPTIONAL
+      IMPORTING is_repo_invoice  TYPE zif_ksef_xml_types=>ty_repo_invoice
+                io_logger        TYPE REF TO zif_ksef_log_manager OPTIONAL
       RETURNING VALUE(rs_result) TYPE zif_ksef_xml_types=>ty_xml_result.
 
     METHODS build_old_invoice
-      IMPORTING iv_xml_old     TYPE string
-                is_header      TYPE zif_ksef_xml_types=>ty_invoice_header
+      IMPORTING iv_xml_old        TYPE string
+                is_header         TYPE zif_ksef_xml_types=>ty_invoice_header
       RETURNING VALUE(rs_invoice) TYPE zif_ksef_xml_types=>ty_invoice.
 
     METHODS append_message
-      IMPORTING iv_severity   TYPE symsgty
-                iv_code       TYPE string
-                iv_text       TYPE string
-                iv_ksef_id    TYPE zlx_ksef_id OPTIONAL
-      CHANGING  ct_messages   TYPE zif_ksef_xml_types=>tt_message.
+      IMPORTING iv_severity TYPE symsgty
+                iv_code     TYPE string
+                iv_text     TYPE string
+                iv_ksef_id  TYPE zlx_ksef_id OPTIONAL
+      CHANGING  ct_messages TYPE zif_ksef_xml_types=>tt_message.
 
 ENDCLASS.
 
@@ -63,7 +63,7 @@ CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
 
   METHOD create_xml.
     DATA lt_ksef_ids TYPE zkstg_t_inv_key.
-    APPEND iv_ksef_id TO lt_ksef_ids.
+    APPEND VALUE #( ksef_id = iv_ksef_id ) TO lt_ksef_ids.
 
     DATA(lt_results) = me->create_and_validate_xmls(
       EXPORTING
@@ -97,29 +97,29 @@ CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
       EXPORTING
         it_ksef_ids = it_ksef_ids ).
 
-    LOOP AT it_ksef_ids INTO DATA(lv_ksef_id).
+    LOOP AT it_ksef_ids INTO DATA(ls_ksef_id).
       DATA(ls_result) = VALUE zif_ksef_xml_types=>ty_xml_result( ).
 
       TRY.
-          READ TABLE lt_repo_invoices INTO DATA(ls_repo_invoice) WITH KEY ksef_id = lv_ksef_id.
+          READ TABLE lt_repo_invoices INTO DATA(ls_repo_invoice) WITH KEY ksef_id = ls_ksef_id-ksef_id.
           IF sy-subrc <> 0.
-            ls_result-ksef_id = lv_ksef_id.
+            ls_result-ksef_id = ls_ksef_id-ksef_id.
             ls_result-status = 'E'.
             me->append_message(
               EXPORTING
                 iv_severity = 'E'
                 iv_code     = 'XML_REPO_MISSING'
                 iv_text     = 'Repository did not return data for KSeF ID.'
-                iv_ksef_id  = lv_ksef_id
+                iv_ksef_id  = ls_ksef_id-ksef_id
               CHANGING
                 ct_messages = ls_result-messages ).
             IF io_logger IS BOUND.
               DATA(lv_log_overall) = io_logger->get_log(
                 iv_subobject   = 'OVERALL'
-                iv_external_id = CONV #( lv_ksef_id ) ).
+                iv_external_id = CONV #( ls_ksef_id-ksef_id ) ).
               DATA(lv_log_xml) = io_logger->get_log(
                 iv_subobject   = 'XML'
-                iv_external_id = CONV #( lv_ksef_id ) ).
+                iv_external_id = CONV #( ls_ksef_id-ksef_id ) ).
               io_logger->add_msg(
                 iv_log_handle = lv_log_overall
                 iv_type       = 'E'
@@ -137,23 +137,23 @@ CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
                 io_logger       = io_logger ).
           ENDIF.
         CATCH zcx_ksef_xml_error INTO DATA(lx_xml).
-          ls_result-ksef_id = lv_ksef_id.
+          ls_result-ksef_id = ls_ksef_id-ksef_id.
           ls_result-status = 'E'.
           me->append_message(
             EXPORTING
               iv_severity = 'E'
               iv_code     = 'XML_PROCESS_ERROR'
               iv_text     = lx_xml->get_text( )
-              iv_ksef_id  = lv_ksef_id
+              iv_ksef_id  = ls_ksef_id-ksef_id
             CHANGING
               ct_messages = ls_result-messages ).
           IF io_logger IS BOUND.
             DATA(lv_log_overall_exc) = io_logger->get_log(
               iv_subobject   = 'OVERALL'
-              iv_external_id = CONV #( lv_ksef_id ) ).
+              iv_external_id = CONV #( ls_ksef_id-ksef_id ) ).
             DATA(lv_log_xml_exc) = io_logger->get_log(
               iv_subobject   = 'XML'
-              iv_external_id = CONV #( lv_ksef_id ) ).
+              iv_external_id = CONV #( ls_ksef_id-ksef_id ) ).
             io_logger->add_msg(
               iv_log_handle = lv_log_overall_exc
               iv_type       = 'E'
@@ -165,23 +165,23 @@ CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
             io_logger->save( ).
           ENDIF.
         CATCH cx_root INTO DATA(lx_root).
-          ls_result-ksef_id = lv_ksef_id.
+          ls_result-ksef_id = ls_ksef_id-ksef_id.
           ls_result-status = 'E'.
           me->append_message(
             EXPORTING
               iv_severity = 'E'
               iv_code     = 'XML_PROCESS_ERROR'
               iv_text     = lx_root->get_text( )
-              iv_ksef_id  = lv_ksef_id
+              iv_ksef_id  = ls_ksef_id-ksef_id
             CHANGING
               ct_messages = ls_result-messages ).
           IF io_logger IS BOUND.
             DATA(lv_log_overall_root) = io_logger->get_log(
               iv_subobject   = 'OVERALL'
-              iv_external_id = CONV #( lv_ksef_id ) ).
+              iv_external_id = CONV #( ls_ksef_id-ksef_id ) ).
             DATA(lv_log_xml_root) = io_logger->get_log(
               iv_subobject   = 'XML'
-              iv_external_id = CONV #( lv_ksef_id ) ).
+              iv_external_id = CONV #( ls_ksef_id-ksef_id ) ).
             io_logger->add_msg(
               iv_log_handle = lv_log_overall_root
               iv_type       = 'E'
