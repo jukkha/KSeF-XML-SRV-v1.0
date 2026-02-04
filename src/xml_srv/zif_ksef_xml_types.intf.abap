@@ -19,6 +19,11 @@ INTERFACE zif_ksef_xml_types
     tt_message TYPE STANDARD TABLE OF ty_message WITH EMPTY KEY.
 
   TYPES:
+    BEGIN OF ty_render_options,
+      pretty_print TYPE abap_bool,
+    END OF ty_render_options.
+
+  TYPES:
     BEGIN OF ty_xml_result,
       ksef_id    TYPE zlx_ksef_id,
       xml_string TYPE string,
