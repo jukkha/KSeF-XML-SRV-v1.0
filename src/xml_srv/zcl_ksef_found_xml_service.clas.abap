@@ -8,8 +8,8 @@ CLASS zcl_ksef_found_xml_service DEFINITION
     METHODS constructor.
 
     METHODS create_and_validate_xmls
-      IMPORTING it_ksef_ids TYPE zkstg_t_inv_key
-                io_logger   TYPE REF TO zif_ksef_log_manager
+      IMPORTING it_ksef_ids       TYPE zkstg_t_inv_key
+                io_logger         TYPE REF TO zif_ksef_log_manager
       RETURNING VALUE(rt_results) TYPE zif_ksef_xml_types=>tt_xml_result
       RAISING   zcx_ksef_xml_error.
 
@@ -44,9 +44,27 @@ CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
       DATA(ls_invoice) = mo_assembler->assemble( <ls_repo_invoice> ).
       DATA(lv_xml) = mo_renderer->render( ls_invoice ).
       DATA(lt_messages) = mo_validator->validate( lv_xml ).
+      DATA(lv_has_error) = xsdbool( line_exists( lt_messages[ severity = 'E' ] ) ).
+      DATA(lv_status) = COND char1( WHEN lv_has_error = abap_true THEN 'F' ELSE 'S' ).
+
+      IF io_logger IS BOUND.
+        DATA(lv_log_handle) = io_logger->get_log(
+          iv_subobject   = 'XML'
+          iv_external_id = CONV #( <ls_repo_invoice>-ksef_id ) ).
+
+        LOOP AT lt_messages ASSIGNING FIELD-SYMBOL(<ls_message>).
+          io_logger->add_msg(
+            iv_log_handle = lv_log_handle
+            iv_type       = <ls_message>-severity
+            iv_text       = <ls_message>-text ).
+        ENDLOOP.
+
+        io_logger->save( ).
+      ENDIF.
+
       APPEND VALUE #( ksef_id = <ls_repo_invoice>-ksef_id
                       xml_string = lv_xml
-                      status = space
+                      status = lv_status
                       messages = lt_messages ) TO rt_results.
     ENDLOOP.
   ENDMETHOD.

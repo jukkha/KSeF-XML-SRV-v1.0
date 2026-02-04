@@ -8,11 +8,22 @@ INTERFACE zif_ksef_xml_types
     tt_xml_request TYPE STANDARD TABLE OF ty_xml_request WITH EMPTY KEY.
 
   TYPES:
+    BEGIN OF ty_message,
+      severity   TYPE symsgty,
+      code       TYPE string,
+      text       TYPE string,
+      ksef_id    TYPE zlx_ksef_id,
+      item_no    TYPE string,
+      field_name TYPE string,
+    END OF ty_message,
+    tt_message TYPE STANDARD TABLE OF ty_message WITH EMPTY KEY.
+
+  TYPES:
     BEGIN OF ty_xml_result,
       ksef_id    TYPE zlx_ksef_id,
       xml_string TYPE string,
       status     TYPE char1,
-      messages   TYPE zkstg_t_message,
+      messages   TYPE tt_message,
     END OF ty_xml_result,
     tt_xml_result TYPE STANDARD TABLE OF ty_xml_result WITH KEY ksef_id.
 
