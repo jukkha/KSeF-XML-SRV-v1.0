@@ -5,18 +5,18 @@ CLASS zcl_ksef_found_xml_renderer DEFINITION
 
   PUBLIC SECTION.
     METHODS render
-      IMPORTING is_invoice TYPE zif_ksef_xml_types=>ty_invoice
-                is_options TYPE zif_ksef_xml_types=>ty_render_options OPTIONAL
+      IMPORTING is_invoice    TYPE zif_ksef_xml_types=>ty_invoice
+                is_options    TYPE zif_ksef_xml_types=>ty_render_options OPTIONAL
       RETURNING VALUE(rv_xml) TYPE string.
   PRIVATE SECTION.
     CONSTANTS:
-      gc_root_name        TYPE string VALUE 'Faktura',
-      gc_ns_default       TYPE string VALUE 'http://crd.gov.pl/wzor/2025/06/25/13775/',
-      gc_ns_etd           TYPE string VALUE 'http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/',
-      gc_ns_xsi           TYPE string VALUE 'http://www.w3.org/2001/XMLSchema-instance',
-      gc_kod_formularza   TYPE string VALUE 'FA',
-      gc_kod_systemowy    TYPE string VALUE 'FA (3)',
-      gc_wersja_schemy    TYPE string VALUE '1-0E',
+      gc_root_name          TYPE string VALUE 'Faktura',
+      gc_ns_default         TYPE string VALUE 'http://crd.gov.pl/wzor/2025/06/25/13775/',
+      gc_ns_etd             TYPE string VALUE 'http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/',
+      gc_ns_xsi             TYPE string VALUE 'http://www.w3.org/2001/XMLSchema-instance',
+      gc_kod_formularza     TYPE string VALUE 'FA',
+      gc_kod_systemowy      TYPE string VALUE 'FA (3)',
+      gc_wersja_schemy      TYPE string VALUE '1-0E',
       gc_wariant_formularza TYPE string VALUE '3'.
 
     TYPES:
@@ -80,58 +80,58 @@ CLASS zcl_ksef_found_xml_renderer DEFINITION
 
     METHODS get_component_value
       IMPORTING
-        is_data      TYPE any
-        iv_component TYPE string
+                is_data         TYPE any
+                iv_component    TYPE string
       RETURNING VALUE(rv_value) TYPE string.
 
     METHODS has_struct_data
       IMPORTING
-        is_data TYPE any
+                is_data            TYPE any
       RETURNING VALUE(rv_has_data) TYPE abap_bool.
 
     METHODS build_struct_key
       IMPORTING
-        is_data TYPE any
+                is_data       TYPE any
       RETURNING VALUE(rv_key) TYPE string.
 
     METHODS normalize_text
       IMPORTING
-        iv_value TYPE string
+                iv_value        TYPE string
       RETURNING VALUE(rv_value) TYPE string.
 
     METHODS get_item_key
       IMPORTING
-        is_item TYPE zif_ksef_xml_types=>ty_invoice_item
+                is_item       TYPE zif_ksef_xml_types=>ty_invoice_item
       RETURNING VALUE(rv_key) TYPE string.
 
     METHODS get_zal_item_key
       IMPORTING
-        is_item TYPE zif_ksef_xml_types=>ty_zal_item
+                is_item       TYPE zif_ksef_xml_types=>ty_zal_item
       RETURNING VALUE(rv_key) TYPE string.
 
     METHODS get_podmiot_key
       IMPORTING
-        is_podmiot TYPE zif_ksef_xml_types=>ty_podmiot
+                is_podmiot    TYPE zif_ksef_xml_types=>ty_podmiot
       RETURNING VALUE(rv_key) TYPE string.
 
     METHODS sort_items
       IMPORTING
-        it_items TYPE zif_ksef_xml_types=>tt_invoice_items
+                it_items        TYPE zif_ksef_xml_types=>tt_invoice_items
       RETURNING VALUE(rt_items) TYPE zif_ksef_xml_types=>tt_invoice_items.
 
     METHODS sort_zal_items
       IMPORTING
-        it_items TYPE zif_ksef_xml_types=>tt_zal_items
+                it_items        TYPE zif_ksef_xml_types=>tt_zal_items
       RETURNING VALUE(rt_items) TYPE zif_ksef_xml_types=>tt_zal_items.
 
     METHODS sort_podmiot
       IMPORTING
-        it_podmiot TYPE zif_ksef_xml_types=>tt_podmiot
+                it_podmiot        TYPE zif_ksef_xml_types=>tt_podmiot
       RETURNING VALUE(rt_podmiot) TYPE zif_ksef_xml_types=>tt_podmiot.
 
     METHODS pretty_print_xml
       IMPORTING
-        iv_xml TYPE string
+                iv_xml        TYPE string
       RETURNING VALUE(rv_xml) TYPE string.
 ENDCLASS.
 
