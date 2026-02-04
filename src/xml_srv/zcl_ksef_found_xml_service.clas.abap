@@ -242,8 +242,8 @@ CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
         DATA(ls_invoice) = mo_assembler->assemble(
           EXPORTING
             is_repo_invoice = is_repo_invoice ).
-        DATA(lv_xml) TYPE string.
-        DATA(ls_render_invoice) TYPE zif_ksef_xml_types=>ty_invoice.
+        DATA lv_xml TYPE string.
+        DATA ls_render_invoice TYPE zif_ksef_xml_types=>ty_invoice.
 
         IF io_logger IS BOUND.
           io_logger->add_msg(
