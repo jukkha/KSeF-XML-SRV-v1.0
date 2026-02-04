@@ -44,7 +44,7 @@
 
 ## 3. Ключевой контракт: batch по `ksef_id`
 
-### 3.1 Вход/выход XML Service (предлагаемый интерфейс)
+### 3.1 Вход/выход XML Service (финализированный интерфейс фасада)
 
 ```abap
 TYPES:
@@ -57,10 +57,16 @@ TYPES:
   BEGIN OF ty_xml_result,
     ksef_id     TYPE zlx_ksef_id,
     xml_string  TYPE string,
-    status      TYPE char1,          " S/F
+    status      TYPE char1,          " S/E
     messages    TYPE zkstg_t_message, " единый формат сообщений
   END OF ty_xml_result,
   tt_xml_result TYPE STANDARD TABLE OF ty_xml_result WITH KEY ksef_id.
+
+METHODS create_xml
+  IMPORTING iv_ksef_id TYPE zlx_ksef_id
+            io_logger  TYPE REF TO zif_ksef_log_manager OPTIONAL
+  RETURNING VALUE(rs_result) TYPE ty_xml_result
+  RAISING zcx_ksef_xml_error.
 
 METHODS create_and_validate_xmls
   IMPORTING it_ksef_ids TYPE zkstg_t_inv_key
@@ -69,10 +75,18 @@ METHODS create_and_validate_xmls
   RAISING zcx_ksef_xml_error.
 ```
 
+**Семантика результата (единая для single и batch):**
+- `ksef_id` **всегда заполнен**.
+- `status = 'S'` **только если** XML сгенерирован **и** валидация прошла (XSD/бизнес-валидация).
+- `status = 'E'` при любой блокирующей ошибке (без dump).
+- `xml_string` заполняется **только при** `status = 'S'`.
+- `messages` возвращаются всегда (может быть пустой список).
+- Опционально (если присутствуют в типе): `is_correction`, `has_diff`.
+
 **Почему так:**
-- UI/Orchestrator всегда работает с `ksef_id` (как в архитектуре) fileciteturn6file0.
+- UI/Orchestrator всегда работает с `ksef_id` (как в архитектуре) .
 - batch даёт производительность: один набор селектов + цикл обработки.
-- результат по каждому инвойсу независим: можно частично успешно обработать пакет.
+- результат по каждому инвойсу независим: частичный успех допустим, batch не прерывается.
 
 ---
 
@@ -252,7 +266,8 @@ UI/Orchestrator
   -> ZCL_KSEF_FOUND_XML_SERVICE.create_xml
      -> Repository.read_batch([ksef_id])
      -> Assembler.assemble(repo_invoice)
-     -> [if correction_context-xml_old]
+     -> determine_processing_mode( invoice )
+     -> [mode = CORRECTION]
           XML Reader.read_* (old XML -> invoice snapshot)
           Diff.diff_invoice(old, new)
           Correction Builder.build(old, new)
@@ -261,6 +276,9 @@ UI/Orchestrator
      -> Result (status/messages/xml_string/is_correction/has_diff)
      -> BAL log KSEFOUT/OVERALL + KSEFOUT/XML (start/end/steps/errors)
 ```
+
+Decision point: `determine_processing_mode` uses existing context from the assembled invoice
+(например, `correction_context-xml_old` из repository) to select NORMAL vs CORRECTION mode.
 
 Batch (`create_and_validate_xmls`) runs the same pipeline per `ksef_id` with partial success:
 
