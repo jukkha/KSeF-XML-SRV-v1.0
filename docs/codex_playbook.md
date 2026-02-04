@@ -352,6 +352,19 @@ ENDIF.
 Incorrect:
 line_exists = abap_false.
 
+\### 7.6 Internal tables: LOOP target must be a row structure
+\- Never LOOP an internal table INTO a scalar variable, even if the row has only one field.
+\- Always LOOP INTO a row structure/work area, or ASSIGNING a field-symbol.
+
+Correct:
+LOOP AT it_ksef_ids INTO DATA(ls_ksef_id).
+  APPEND VALUE #( ksef_id = ls_ksef_id-ksef_id ) TO rt_invoices.
+ENDLOOP.
+
+Also OK:
+LOOP AT it_ksef_ids ASSIGNING FIELD-SYMBOL(<ls_ksef_id>).
+  APPEND VALUE #( ksef_id = <ls_ksef_id>-ksef_id ) TO rt_invoices.
+ENDLOOP.
 
 Always define keys for hashed/sorted tables.
 
