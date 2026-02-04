@@ -42,7 +42,7 @@ CLASS zcl_ksef_found_xml_service IMPLEMENTATION.
     DATA(lt_repo_invoices) = mo_repository->read_batch( it_ksef_ids ).
     LOOP AT lt_repo_invoices ASSIGNING FIELD-SYMBOL(<ls_repo_invoice>).
       DATA(ls_invoice) = mo_assembler->assemble( <ls_repo_invoice> ).
-      DATA(lv_xml) = mo_renderer->render( ls_invoice ).
+      DATA(lv_xml) = mo_renderer->render( is_invoice = ls_invoice ).
       DATA(lt_messages) = mo_validator->validate( lv_xml ).
       DATA(lv_has_error) = xsdbool( line_exists( lt_messages[ severity = 'E' ] ) ).
       DATA(lv_status) = COND char1( WHEN lv_has_error = abap_true THEN 'F' ELSE 'S' ).

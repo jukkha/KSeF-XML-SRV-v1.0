@@ -168,6 +168,27 @@ METHODS create_and_validate_xmls
 
 ---
 
+### 5.6 Renderer determinism rules (FA(3))
+
+Renderer (`ZCL_KSEF_FOUND_XML_RENDERER`) must produce **deterministic** XML output for FA(3):
+
+**Ordering rules**
+- Repeating sections (`FaWiersz`, `ZamowienieWiersz`, `Podmiot3`, `Podmiot2K`) are rendered in a **stable, explicit order**.
+- If input tables are hashed or non-ordered, renderer **must sort** them into a stable order **before** rendering.
+- Sorting keys are derived from stable business identifiers (e.g. `UU_ID`, `NrWiersza*`, party role + ID). If keys are missing, a deterministic structural key is used.
+
+**Formatting flag**
+- Pretty-printing/indentation is controlled by a **single flag** (`pretty_print`) in renderer options.
+- Default is **off** (raw, compact output) unless the project explicitly decides otherwise.
+- No random whitespace differences are introduced between runs.
+
+**Namespaces & envelope**
+- Root structure uses FA(3) envelope: `<Faktura>` with **single** canonical namespace set.
+- Namespace values are fixed and consistent across outputs (no variants).
+- Namespace definitions must not be duplicated or reordered dynamically.
+
+---
+
 ## 6. Рефакторинг `zcl_ksef_data_helper`
 
 ### 6.1 Что делать с классом
