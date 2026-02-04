@@ -5,7 +5,7 @@ CLASS zcl_ksef_found_xml_repository DEFINITION
 
   PUBLIC SECTION.
     METHODS read_batch
-      IMPORTING it_ksef_ids TYPE zkstg_t_inv_key
+      IMPORTING it_ksef_ids        TYPE zkstg_t_inv_key
       RETURNING VALUE(rt_invoices) TYPE zif_ksef_xml_types=>tt_repo_invoices.
   PRIVATE SECTION.
     TYPES:
@@ -298,11 +298,11 @@ CLASS zcl_ksef_found_xml_repository IMPLEMENTATION.
           LEFT OUTER JOIN zlx_ksef_out AS z
             ON z~bukrs = b~bukrs
            AND z~docnum = b~kidno
-          INTO TABLE @lt_correction
           FOR ALL ENTRIES IN @lt_key_fields
           WHERE b~bukrs = @lt_key_fields-bukrs
             AND b~gjahr = @lt_key_fields-gjahr
-            AND b~belnr = @lt_key_fields-belnr.
+            AND b~belnr = @lt_key_fields-belnr
+            INTO TABLE @lt_correction.
       ENDIF.
 
       DATA lt_bukrs TYPE tt_bukrs_entry.
