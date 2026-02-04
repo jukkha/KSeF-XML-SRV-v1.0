@@ -5,7 +5,7 @@ CLASS zcl_ksef_found_xml_validator DEFINITION
 
   PUBLIC SECTION.
     METHODS validate
-      IMPORTING iv_xml TYPE string
+      IMPORTING iv_xml             TYPE string
       RETURNING VALUE(rt_messages) TYPE zif_ksef_xml_types=>tt_message.
 
   PRIVATE SECTION.
@@ -29,20 +29,20 @@ CLASS zcl_ksef_found_xml_validator DEFINITION
       CHANGING  ct_messages   TYPE zif_ksef_xml_types=>tt_message.
 
     METHODS is_podmiot_initial
-      IMPORTING is_podmiot TYPE zif_ksef_xml_types=>ty_podmiot
+      IMPORTING is_podmiot           TYPE zif_ksef_xml_types=>ty_podmiot
       RETURNING VALUE(rv_is_initial) TYPE abap_bool.
 
     METHODS has_party_id
-      IMPORTING is_podmiot TYPE zif_ksef_xml_types=>ty_podmiot
+      IMPORTING is_podmiot       TYPE zif_ksef_xml_types=>ty_podmiot
       RETURNING VALUE(rv_has_id) TYPE abap_bool.
 
     METHODS is_amount_valid
-      IMPORTING iv_value TYPE string
+      IMPORTING iv_value        TYPE string
       RETURNING VALUE(rv_valid) TYPE abap_bool.
 
     METHODS get_item_context
-      IMPORTING is_item TYPE zif_ksef_xml_types=>ty_invoice_item
-                iv_index TYPE i
+      IMPORTING is_item           TYPE zif_ksef_xml_types=>ty_invoice_item
+                iv_index          TYPE i
       RETURNING VALUE(rv_item_no) TYPE string.
 ENDCLASS.
 
@@ -234,7 +234,7 @@ CLASS zcl_ksef_found_xml_validator IMPLEMENTATION.
             iv_field_name = 'P_8A'
           CHANGING
             ct_messages   = rt_messages ).
-      ELSEIF me->is_amount_valid( <ls_item>-p_8a ) = abap_false.
+      ELSEIF me->is_amount_valid( CONV #( <ls_item>-p_8a ) ) = abap_false.
         me->add_message(
           EXPORTING
             iv_severity   = 'E'
@@ -258,7 +258,7 @@ CLASS zcl_ksef_found_xml_validator IMPLEMENTATION.
             ct_messages   = rt_messages ).
       ENDIF.
 
-      IF <ls_item>-p_11 IS NOT INITIAL AND me->is_amount_valid( <ls_item>-p_11 ) = abap_false.
+      IF <ls_item>-p_11 IS NOT INITIAL AND me->is_amount_valid( CONV #( <ls_item>-p_11 ) ) = abap_false.
         me->add_message(
           EXPORTING
             iv_severity   = 'E'
@@ -270,7 +270,7 @@ CLASS zcl_ksef_found_xml_validator IMPLEMENTATION.
             ct_messages   = rt_messages ).
       ENDIF.
 
-      IF <ls_item>-p_11vat IS NOT INITIAL AND me->is_amount_valid( <ls_item>-p_11vat ) = abap_false.
+      IF <ls_item>-p_11vat IS NOT INITIAL AND me->is_amount_valid( CONV #( <ls_item>-p_11vat ) ) = abap_false.
         me->add_message(
           EXPORTING
             iv_severity   = 'E'
@@ -282,7 +282,7 @@ CLASS zcl_ksef_found_xml_validator IMPLEMENTATION.
             ct_messages   = rt_messages ).
       ENDIF.
 
-      IF <ls_item>-p_12 IS NOT INITIAL AND me->is_amount_valid( <ls_item>-p_12 ) = abap_false.
+      IF <ls_item>-p_12 IS NOT INITIAL AND me->is_amount_valid( CONV #( <ls_item>-p_12 ) ) = abap_false.
         me->add_message(
           EXPORTING
             iv_severity   = 'E'
@@ -322,14 +322,14 @@ CLASS zcl_ksef_found_xml_validator IMPLEMENTATION.
       LOOP AT lt_items ASSIGNING <ls_item>.
         DATA(lv_item_amount) = CONV decfloat34( 0 ).
         DATA(lv_has_amount) = abap_false.
-        IF <ls_item>-p_12 IS NOT INITIAL AND me->is_amount_valid( <ls_item>-p_12 ) = abap_true.
-          lv_item_amount = lo_diff->normalize_amount( <ls_item>-p_12 ).
+        IF <ls_item>-p_12 IS NOT INITIAL AND me->is_amount_valid( CONV #( <ls_item>-p_12 ) ) = abap_true.
+          lv_item_amount = lo_diff->normalize_amount( CONV #( <ls_item>-p_12 ) ).
           lv_has_amount = abap_true.
-        ELSEIF <ls_item>-p_11 IS NOT INITIAL AND me->is_amount_valid( <ls_item>-p_11 ) = abap_true.
-          lv_item_amount = lo_diff->normalize_amount( <ls_item>-p_11 ).
+        ELSEIF <ls_item>-p_11 IS NOT INITIAL AND me->is_amount_valid( CONV #( <ls_item>-p_11 ) ) = abap_true.
+          lv_item_amount = lo_diff->normalize_amount( CONV #( <ls_item>-p_11 ) ).
           lv_has_amount = abap_true.
-          IF <ls_item>-p_11vat IS NOT INITIAL AND me->is_amount_valid( <ls_item>-p_11vat ) = abap_true.
-            lv_item_amount += lo_diff->normalize_amount( <ls_item>-p_11vat ).
+          IF <ls_item>-p_11vat IS NOT INITIAL AND me->is_amount_valid( CONV #( <ls_item>-p_11vat ) ) = abap_true.
+            lv_item_amount += lo_diff->normalize_amount( CONV #( <ls_item>-p_11vat ) ).
           ENDIF.
         ENDIF.
 
