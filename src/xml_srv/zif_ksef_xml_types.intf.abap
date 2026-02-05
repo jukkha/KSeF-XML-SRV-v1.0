@@ -62,7 +62,9 @@ INTERFACE zif_ksef_xml_types
 
   TYPES:
     BEGIN OF ty_invoice_header,
-      ksef_id TYPE zlx_ksef_id,
+      include TYPE zksef_s_head.
+  TYPES:
+    ksef_id TYPE zlx_ksef_id,
     END OF ty_invoice_header.
 
   TYPES:
@@ -70,8 +72,10 @@ INTERFACE zif_ksef_xml_types
     tt_invoice_items TYPE STANDARD TABLE OF ty_invoice_item WITH EMPTY KEY.
 
   TYPES:
-    ty_podmiot TYPE zlx_ksef_podmiot,
-    tt_podmiot TYPE STANDARD TABLE OF ty_podmiot WITH EMPTY KEY.
+    ty_podmiot  TYPE zlx_ksef_podmiot,
+    ty_podmiot3 TYPE zlx_ksef_podmiot3,
+    tt_podmiot3 TYPE STANDARD TABLE OF ty_podmiot3 WITH EMPTY KEY,
+    tt_podmiot  TYPE STANDARD TABLE OF ty_podmiot WITH EMPTY KEY.
 
   TYPES:
     ty_zal_item  TYPE zlx_ksef_zal_items,
@@ -89,7 +93,7 @@ INTERFACE zif_ksef_xml_types
       podmiot1k          TYPE ty_podmiot,
       podmiot2           TYPE ty_podmiot,
       podmiot2k          TYPE tt_podmiot,
-      podmiot3           TYPE tt_podmiot,
+      podmiot3           TYPE tt_podmiot3,
       items              TYPE tt_invoice_items,
       zal_items          TYPE tt_zal_items,
       correction_context TYPE ty_correction_context,

@@ -123,6 +123,7 @@ METHODS create_and_validate_xmls
 ### 5.1 Data Assembler (из данных репозитория → domain model)
 - `lcl_invoice_assembler`  
 - строит `ty_invoice_model` из данных, полученных из repository.
+- Assembler maps `ty_repo_invoice -> ty_invoice` (domain model) without DB reads and without validation.
 - не парсит XML, не делает diff.
 
 ### 5.2 XML Parser (строго чтение XML → структуры)
