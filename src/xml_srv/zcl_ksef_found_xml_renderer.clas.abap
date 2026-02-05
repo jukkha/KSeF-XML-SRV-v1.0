@@ -46,6 +46,12 @@ CLASS zcl_ksef_found_xml_renderer DEFINITION
         iv_tagname  TYPE string
         it_podmiot  TYPE zif_ksef_xml_types=>tt_podmiot.
 
+    METHODS append_podmiot3_list
+      IMPORTING
+        ir_document TYPE REF TO if_ixml_document
+        ir_parent   TYPE REF TO if_ixml_node
+        it_podmiot3 TYPE zif_ksef_xml_types=>tt_podmiot3.
+
     METHODS append_fa_section
       IMPORTING
         ir_document TYPE REF TO if_ixml_document
@@ -129,6 +135,16 @@ CLASS zcl_ksef_found_xml_renderer DEFINITION
                 it_podmiot        TYPE zif_ksef_xml_types=>tt_podmiot
       RETURNING VALUE(rt_podmiot) TYPE zif_ksef_xml_types=>tt_podmiot.
 
+    METHODS get_podmiot3_key
+      IMPORTING
+                is_podmiot3    TYPE zif_ksef_xml_types=>ty_podmiot3
+      RETURNING VALUE(rv_key) TYPE string.
+
+    METHODS sort_podmiot3
+      IMPORTING
+                it_podmiot3        TYPE zif_ksef_xml_types=>tt_podmiot3
+      RETURNING VALUE(rt_podmiot3) TYPE zif_ksef_xml_types=>tt_podmiot3.
+
     METHODS pretty_print_xml
       IMPORTING
                 iv_xml        TYPE string
@@ -175,12 +191,11 @@ CLASS zcl_ksef_found_xml_renderer IMPLEMENTATION.
         iv_tagname  = 'Podmiot2'
         is_podmiot  = is_invoice-podmiot2 ).
 
-    me->append_podmiot_list(
+    me->append_podmiot3_list(
       EXPORTING
         ir_document = lo_document
         ir_parent   = lo_root
-        iv_tagname  = 'Podmiot3'
-        it_podmiot  = is_invoice-podmiot3 ).
+        it_podmiot3 = is_invoice-podmiot3 ).
 
     me->append_fa_section(
       EXPORTING
@@ -341,6 +356,88 @@ CLASS zcl_ksef_found_xml_renderer IMPLEMENTATION.
           ir_parent   = ir_parent
           iv_tagname  = iv_tagname
           is_podmiot  = <ls_podmiot> ).
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD append_podmiot3_list.
+    DATA(lt_sorted) = me->sort_podmiot3( it_podmiot3 ).
+    DATA(lt_id_map) = VALUE tt_tag_map(
+      ( tag_name = 'NIP'       component_name = 'NIP' )
+      ( tag_name = 'KodUE'     component_name = 'KODUE' )
+      ( tag_name = 'NrVatUE'   component_name = 'NRVATUE' )
+      ( tag_name = 'NrID'      component_name = 'NRID' )
+      ( tag_name = 'BrakID'    component_name = 'BRAKID' )
+      ( tag_name = 'Nazwa'     component_name = 'NAZWA' )
+      ( tag_name = 'IDNabywcy' component_name = 'IDNABYWCY' )
+      ( tag_name = 'NrKlienta' component_name = 'NRKLIENTA' ) ).
+
+    DATA(lt_addr_map) = VALUE tt_tag_map(
+      ( tag_name = 'KodKraju' component_name = 'KODKRAJU' )
+      ( tag_name = 'AdresL1'  component_name = 'ADR_ADRESL1' )
+      ( tag_name = 'AdresL2'  component_name = 'ADR_ADRESL2' )
+      ( tag_name = 'GLN'      component_name = 'GLN' ) ).
+
+    DATA(lt_role_map) = VALUE tt_tag_map(
+      ( tag_name = 'Rola'      component_name = 'ROLA' )
+      ( tag_name = 'RolaInna'  component_name = 'ROLAINNA' )
+      ( tag_name = 'OpisRoli'  component_name = 'OPISROLI' )
+      ( tag_name = 'Udzial'    component_name = 'UDZIAL' ) ).
+
+    LOOP AT lt_sorted ASSIGNING FIELD-SYMBOL(<ls_podmiot3>).
+      DATA(lo_podmiot3) = ir_document->create_simple_element(
+        EXPORTING
+          name   = 'Podmiot3'
+          parent = ir_parent ).
+
+      DATA(lv_has_ident) = abap_false.
+      LOOP AT lt_id_map ASSIGNING FIELD-SYMBOL(<ls_id_check>).
+        IF me->get_component_value( is_data = <ls_podmiot3> iv_component = <ls_id_check>-component_name ) IS NOT INITIAL.
+          lv_has_ident = abap_true.
+          EXIT.
+        ENDIF.
+      ENDLOOP.
+
+      IF lv_has_ident = abap_true.
+        DATA(lo_ident) = ir_document->create_simple_element(
+          EXPORTING
+            name   = 'DaneIdentyfikacyjne'
+            parent = lo_podmiot3 ).
+        me->append_tag_map(
+          EXPORTING
+            ir_document = ir_document
+            ir_parent   = lo_ident
+            is_data     = <ls_podmiot3>
+            it_tag_map  = lt_id_map ).
+      ENDIF.
+
+      DATA(lv_has_addr) = abap_false.
+      LOOP AT lt_addr_map ASSIGNING FIELD-SYMBOL(<ls_addr_check>).
+        IF me->get_component_value( is_data = <ls_podmiot3> iv_component = <ls_addr_check>-component_name ) IS NOT INITIAL.
+          lv_has_addr = abap_true.
+          EXIT.
+        ENDIF.
+      ENDLOOP.
+
+      IF lv_has_addr = abap_true.
+        DATA(lo_addr) = ir_document->create_simple_element(
+          EXPORTING
+            name   = 'Adres'
+            parent = lo_podmiot3 ).
+        me->append_tag_map(
+          EXPORTING
+            ir_document = ir_document
+            ir_parent   = lo_addr
+            is_data     = <ls_podmiot3>
+            it_tag_map  = lt_addr_map ).
+      ENDIF.
+
+      me->append_tag_map(
+        EXPORTING
+          ir_document = ir_document
+          ir_parent   = lo_podmiot3
+          is_data     = <ls_podmiot3>
+          it_tag_map  = lt_role_map ).
     ENDLOOP.
   ENDMETHOD.
 
@@ -666,6 +763,44 @@ CLASS zcl_ksef_found_xml_renderer IMPLEMENTATION.
 
     SORT lt_sorted BY key.
     rt_podmiot = VALUE #( FOR ls_row IN lt_sorted ( ls_row-podmiot ) ).
+  ENDMETHOD.
+
+
+  METHOD get_podmiot3_key.
+    rv_key = ``.
+
+    IF is_podmiot3-rola IS NOT INITIAL.
+      rv_key = |{ me->normalize_text( |{ is_podmiot3-rola }| ) }|.
+    ENDIF.
+
+    IF is_podmiot3-nip IS NOT INITIAL.
+      rv_key = |{ rv_key }| && `|NIP:` && me->normalize_text( |{ is_podmiot3-nip }| ).
+    ELSEIF is_podmiot3-nrid IS NOT INITIAL.
+      rv_key = |{ rv_key }| && `|ID:` && me->normalize_text( |{ is_podmiot3-nrid }| ).
+    ELSEIF is_podmiot3-idnabywcy IS NOT INITIAL.
+      rv_key = |{ rv_key }| && `|IDN:` && me->normalize_text( |{ is_podmiot3-idnabywcy }| ).
+    ENDIF.
+
+    CONDENSE rv_key NO-GAPS.
+  ENDMETHOD.
+
+  METHOD sort_podmiot3.
+    TYPES: BEGIN OF ty_pod_sort,
+             key     TYPE string,
+             podmiot TYPE zif_ksef_xml_types=>ty_podmiot3,
+           END OF ty_pod_sort.
+
+    DATA lt_sorted TYPE STANDARD TABLE OF ty_pod_sort WITH EMPTY KEY.
+    LOOP AT it_podmiot3 ASSIGNING FIELD-SYMBOL(<ls_podmiot3>).
+      DATA(lv_key) = me->get_podmiot3_key( <ls_podmiot3> ).
+      IF lv_key IS INITIAL.
+        lv_key = me->build_struct_key( <ls_podmiot3> ).
+      ENDIF.
+      APPEND VALUE #( key = lv_key podmiot = <ls_podmiot3> ) TO lt_sorted.
+    ENDLOOP.
+
+    SORT lt_sorted BY key.
+    rt_podmiot3 = VALUE #( FOR ls_row IN lt_sorted ( ls_row-podmiot ) ).
   ENDMETHOD.
 
   METHOD pretty_print_xml.

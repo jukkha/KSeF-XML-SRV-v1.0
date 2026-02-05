@@ -36,6 +36,14 @@ CLASS zcl_ksef_found_xml_validator DEFINITION
       IMPORTING is_podmiot       TYPE zif_ksef_xml_types=>ty_podmiot
       RETURNING VALUE(rv_has_id) TYPE abap_bool.
 
+    METHODS is_podmiot3_initial
+      IMPORTING is_podmiot3           TYPE zif_ksef_xml_types=>ty_podmiot3
+      RETURNING VALUE(rv_is_initial) TYPE abap_bool.
+
+    METHODS has_podmiot3_id
+      IMPORTING is_podmiot3       TYPE zif_ksef_xml_types=>ty_podmiot3
+      RETURNING VALUE(rv_has_id) TYPE abap_bool.
+
     METHODS is_amount_valid
       IMPORTING iv_value        TYPE string
       RETURNING VALUE(rv_valid) TYPE abap_bool.
@@ -183,7 +191,7 @@ CLASS zcl_ksef_found_xml_validator IMPLEMENTATION.
     ENDIF.
 
     LOOP AT lt_podmiot3 ASSIGNING FIELD-SYMBOL(<ls_pod3>).
-      IF me->has_party_id( <ls_pod3> ) = abap_false AND <ls_pod3>-nazwa IS INITIAL.
+      IF me->has_podmiot3_id( <ls_pod3> ) = abap_false AND <ls_pod3>-nazwa IS INITIAL.
         me->add_message(
           EXPORTING
             iv_severity   = 'W'
@@ -414,6 +422,31 @@ CLASS zcl_ksef_found_xml_validator IMPLEMENTATION.
       OR is_podmiot-nrvatue IS NOT INITIAL
       OR is_podmiot-idnabywcy IS NOT INITIAL
       OR is_podmiot-brakid IS NOT INITIAL ).
+  ENDMETHOD.
+
+
+  METHOD is_podmiot3_initial.
+    rv_is_initial = xsdbool(
+      is_podmiot3-nip IS INITIAL
+      AND is_podmiot3-kodue IS INITIAL
+      AND is_podmiot3-nrvatue IS INITIAL
+      AND is_podmiot3-nrid IS INITIAL
+      AND is_podmiot3-brakid IS INITIAL
+      AND is_podmiot3-nazwa IS INITIAL
+      AND is_podmiot3-kodkraju IS INITIAL
+      AND is_podmiot3-adr_adresl1 IS INITIAL
+      AND is_podmiot3-adr_adresl2 IS INITIAL
+      AND is_podmiot3-adr_gln IS INITIAL
+      AND is_podmiot3-idnabywcy IS INITIAL ).
+  ENDMETHOD.
+
+  METHOD has_podmiot3_id.
+    rv_has_id = xsdbool(
+      is_podmiot3-nip IS NOT INITIAL
+      OR is_podmiot3-nrid IS NOT INITIAL
+      OR is_podmiot3-nrvatue IS NOT INITIAL
+      OR is_podmiot3-idnabywcy IS NOT INITIAL
+      OR is_podmiot3-brakid IS NOT INITIAL ).
   ENDMETHOD.
 
   METHOD is_amount_valid.
