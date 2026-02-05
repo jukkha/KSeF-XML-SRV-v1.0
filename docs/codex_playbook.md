@@ -366,6 +366,15 @@ LOOP AT it_ksef_ids ASSIGNING FIELD-SYMBOL(<ls_ksef_id>).
   APPEND VALUE #( ksef_id = <ls_ksef_id>-ksef_id ) TO rt_invoices.
 ENDLOOP.
 
+\### 7.7 INCLUDE fields access
+
+\- If a type includes another structure via INCLUDE TYPE, fields must be accessed via the include component name (e.g. -include-<field>).
+
+ \### 7.8 Podmiot3 is separate contract
+
+\- Do not assume Podmiot3 shares the same structure as Podmiot1/2
+\- use dedicated types ty_podmiot3/tt_podmiot3 from ZIF_KSEF_XML_TYPES
+
 Always define keys for hashed/sorted tables.
 
 
