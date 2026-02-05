@@ -81,10 +81,15 @@ CLASS zcl_ksef_found_xml_diff DEFINITION
       RETURNING VALUE(rv_diff)     TYPE abap_bool.
 
     METHODS compare_podmiot3_detail
-      IMPORTING it_old          TYPE zif_ksef_xml_types=>tt_podmiot
-                it_new          TYPE zif_ksef_xml_types=>tt_podmiot
+      IMPORTING it_old          TYPE zif_ksef_xml_types=>tt_podmiot3
+                it_new          TYPE zif_ksef_xml_types=>tt_podmiot3
       CHANGING  ct_changed_keys TYPE zif_ksef_xml_types=>tt_diff_keys
       RETURNING VALUE(rv_diff)  TYPE abap_bool.
+
+    METHODS compare_podmiot3_struct
+      IMPORTING is_old         TYPE zif_ksef_xml_types=>ty_podmiot3
+                is_new         TYPE zif_ksef_xml_types=>ty_podmiot3
+      RETURNING VALUE(rv_diff) TYPE abap_bool.
 
     METHODS get_item_key
       IMPORTING is_item       TYPE zif_ksef_xml_types=>ty_invoice_item
@@ -95,7 +100,7 @@ CLASS zcl_ksef_found_xml_diff DEFINITION
       RETURNING VALUE(rv_key) TYPE string.
 
     METHODS get_podmiot3_key
-      IMPORTING is_podmiot    TYPE zif_ksef_xml_types=>ty_podmiot
+      IMPORTING is_podmiot    TYPE zif_ksef_xml_types=>ty_podmiot3
       RETURNING VALUE(rv_key) TYPE string.
 ENDCLASS.
 
@@ -519,7 +524,7 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
 
     TYPES: BEGIN OF ty_podmiot_map,
              key     TYPE string,
-             podmiot TYPE zif_ksef_xml_types=>ty_podmiot,
+             podmiot TYPE zif_ksef_xml_types=>ty_podmiot3,
            END OF ty_podmiot_map.
 
     DATA lt_old_map TYPE HASHED TABLE OF ty_podmiot_map WITH UNIQUE KEY key.
@@ -569,8 +574,8 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
           CONTINUE.
         ENDIF.
 
-        IF me->compare_podmiot_struct( is_old = ls_old
-                                       is_new = ls_new ) = abap_true.
+        IF me->compare_podmiot3_struct( is_old = ls_old
+                                        is_new = ls_new ) = abap_true.
           rv_diff = abap_true.
           APPEND |INDEX:{ sy-index }| TO ct_changed_keys.
           CONTINUE.
@@ -588,8 +593,8 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
         CONTINUE.
       ENDIF.
 
-      IF me->compare_podmiot_struct( is_old = <ls_old_map>-podmiot
-                                     is_new = <ls_new_map>-podmiot ) = abap_true.
+      IF me->compare_podmiot3_struct( is_old = <ls_old_map>-podmiot
+                                      is_new = <ls_new_map>-podmiot ) = abap_true.
         rv_diff = abap_true.
         APPEND <ls_new_map>-key TO ct_changed_keys.
         CONTINUE.
@@ -601,6 +606,23 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
         rv_diff = abap_true.
         APPEND <ls_old_remaining>-key TO ct_changed_keys.
         CONTINUE.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD compare_podmiot3_struct.
+    rv_diff = abap_false.
+
+    DATA(lo_desc) = CAST cl_abap_structdescr( cl_abap_structdescr=>describe_by_data( is_old ) ).
+    LOOP AT lo_desc->components INTO DATA(ls_comp).
+      FIELD-SYMBOLS <lv_old> TYPE any.
+      FIELD-SYMBOLS <lv_new> TYPE any.
+
+      ASSIGN COMPONENT ls_comp-name OF STRUCTURE is_old TO <lv_old>.
+      ASSIGN COMPONENT ls_comp-name OF STRUCTURE is_new TO <lv_new>.
+      IF sy-subrc <> 0 OR <lv_old> <> <lv_new>.
+        rv_diff = abap_true.
+        RETURN.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
@@ -628,9 +650,8 @@ CLASS zcl_ksef_found_xml_diff IMPLEMENTATION.
   METHOD get_podmiot3_key.
     rv_key = ``.
 
-    ASSIGN COMPONENT 'ROLA' OF STRUCTURE is_podmiot TO FIELD-SYMBOL(<lv_role>).
-    IF <lv_role> IS ASSIGNED AND <lv_role> IS NOT INITIAL.
-      rv_key = |{ me->normalize_text( |{ <lv_role> }| ) }|.
+    IF is_podmiot-rola IS NOT INITIAL.
+      rv_key = |{ me->normalize_text( |{ is_podmiot-rola }| ) }|.
     ENDIF.
 
     IF is_podmiot-nip IS NOT INITIAL.

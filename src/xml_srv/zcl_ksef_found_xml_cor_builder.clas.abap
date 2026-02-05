@@ -36,8 +36,12 @@ CLASS zcl_ksef_found_xml_cor_builder DEFINITION
       RETURNING VALUE(rv_key) TYPE string.
 
     METHODS get_podmiot3_key
-      IMPORTING is_podmiot    TYPE zif_ksef_xml_types=>ty_podmiot
+      IMPORTING is_podmiot    TYPE zif_ksef_xml_types=>ty_podmiot3
       RETURNING VALUE(rv_key) TYPE string.
+
+    METHODS map_podmiot3_to_podmiot2k
+      IMPORTING is_podmiot3          TYPE zif_ksef_xml_types=>ty_podmiot3
+      RETURNING VALUE(rs_podmiot2k) TYPE zif_ksef_xml_types=>ty_podmiot.
 
     METHODS get_index_from_key
       IMPORTING iv_key          TYPE string
@@ -97,7 +101,7 @@ CLASS zcl_ksef_found_xml_cor_builder IMPLEMENTATION.
     IF is_diff-changed_podmiot3 = abap_true AND is_diff-changed_podmiot3_keys IS NOT INITIAL.
       TYPES: BEGIN OF ty_podmiot_map,
                key     TYPE string,
-               podmiot TYPE zif_ksef_xml_types=>ty_podmiot,
+               podmiot TYPE zif_ksef_xml_types=>ty_podmiot3,
              END OF ty_podmiot_map.
 
       DATA lt_old_map TYPE HASHED TABLE OF ty_podmiot_map WITH UNIQUE KEY key.
@@ -123,14 +127,14 @@ CLASS zcl_ksef_found_xml_cor_builder IMPLEMENTATION.
           " Index-based fallback: rely on diff key format INDEX:<n>.
           READ TABLE is_old-podmiot3 INDEX lv_index INTO DATA(ls_old_index).
           IF sy-subrc = 0.
-            APPEND ls_old_index TO rt_podmiot2k.
+            APPEND me->map_podmiot3_to_podmiot2k( ls_old_index ) TO rt_podmiot2k.
           ENDIF.
           CONTINUE.
         ENDIF.
 
         READ TABLE lt_old_map INTO DATA(ls_old_map) WITH TABLE KEY key = lv_changed_key.
         IF sy-subrc = 0.
-          APPEND ls_old_map-podmiot TO rt_podmiot2k.
+          APPEND me->map_podmiot3_to_podmiot2k( ls_old_map-podmiot ) TO rt_podmiot2k.
         ENDIF.
       ENDLOOP.
     ENDIF.
@@ -319,9 +323,8 @@ CLASS zcl_ksef_found_xml_cor_builder IMPLEMENTATION.
   METHOD get_podmiot3_key.
     rv_key = ``.
 
-    ASSIGN COMPONENT 'ROLA' OF STRUCTURE is_podmiot TO FIELD-SYMBOL(<lv_role>).
-    IF <lv_role> IS ASSIGNED AND <lv_role> IS NOT INITIAL.
-      rv_key = |{ me->normalize_text( |{ <lv_role> }| ) }|.
+    IF is_podmiot-rola IS NOT INITIAL.
+      rv_key = |{ me->normalize_text( |{ is_podmiot-rola }| ) }|.
     ENDIF.
 
     IF is_podmiot-nip IS NOT INITIAL.
@@ -333,6 +336,22 @@ CLASS zcl_ksef_found_xml_cor_builder IMPLEMENTATION.
     ENDIF.
 
     CONDENSE rv_key NO-GAPS.
+  ENDMETHOD.
+
+  METHOD map_podmiot3_to_podmiot2k.
+    CLEAR rs_podmiot2k.
+
+    rs_podmiot2k-idnabywcy = is_podmiot3-idnabywcy.
+    rs_podmiot2k-nip = is_podmiot3-nip.
+    rs_podmiot2k-kodue = is_podmiot3-kodue.
+    rs_podmiot2k-nrvatue = is_podmiot3-nrvatue.
+    rs_podmiot2k-nrid = is_podmiot3-nrid.
+    rs_podmiot2k-brakid = is_podmiot3-brakid.
+    rs_podmiot2k-nazwa = is_podmiot3-nazwa.
+    rs_podmiot2k-kodkraju = is_podmiot3-kodkraju.
+    rs_podmiot2k-adresl1 = is_podmiot3-adr_adresl1.
+    rs_podmiot2k-adresl2 = is_podmiot3-adr_adresl2.
+    rs_podmiot2k-gln = is_podmiot3-gln.
   ENDMETHOD.
 
   METHOD get_index_from_key.

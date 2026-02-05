@@ -11,7 +11,7 @@ CLASS zcl_ksef_found_xml_reader DEFINITION
 
     METHODS read_podmiot3_list
       IMPORTING iv_xml TYPE string
-      RETURNING VALUE(rt_podmiot) TYPE zif_ksef_xml_types=>tt_podmiot.
+      RETURNING VALUE(rt_podmiot) TYPE zif_ksef_xml_types=>tt_podmiot3.
 
     METHODS read_items
       IMPORTING iv_xml TYPE string
@@ -112,7 +112,7 @@ CLASS zcl_ksef_found_xml_reader IMPLEMENTATION.
 
     DATA: lv_name  TYPE string,
           lv_in_p3 TYPE abap_bool VALUE abap_false,
-          ls_p3    TYPE zif_ksef_xml_types=>ty_podmiot.
+          ls_p3    TYPE zif_ksef_xml_types=>ty_podmiot3.
 
     TRY.
         DO.
@@ -147,9 +147,9 @@ CLASS zcl_ksef_found_xml_reader IMPLEMENTATION.
                   WHEN 'KodKraju'.
                     ls_p3-kodkraju = me->read_text_value( lo_reader ).
                   WHEN 'AdresL1'.
-                    ls_p3-adresl1 = me->read_text_value( lo_reader ).
+                    ls_p3-adr_adresl1 = me->read_text_value( lo_reader ).
                   WHEN 'AdresL2'.
-                    ls_p3-adresl2 = me->read_text_value( lo_reader ).
+                    ls_p3-adr_adresl2 = me->read_text_value( lo_reader ).
                   WHEN 'GLN'.
                     ls_p3-gln = me->read_text_value( lo_reader ).
                 ENDCASE.

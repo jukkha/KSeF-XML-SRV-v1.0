@@ -130,7 +130,7 @@ METHODS create_and_validate_xmls
 - `lcl_xml_reader`  
 - методы:
   - `read_podmiot( iv_xml, iv_tagname ) -> rs_podmiot`
-  - `read_podmiot3_list( iv_xml ) -> rt_podmiot`
+  - `read_podmiot3_list( iv_xml ) -> rt_podmiot3`
   - `read_items( iv_xml ) -> rt_items`
   - `read_zal_items( iv_xml ) -> rt_zal_items`
   - `read_simple_tag( iv_xml, iv_tagname ) -> rv_value` (для P_15, KursWalutyZ и т.д.)
@@ -390,3 +390,5 @@ UI/Orchestrator
 ---
 
 **Конец документа.**
+
+Podmiot3 uses a dedicated structure and table type; it is not interchangeable with Podmiot1/Podmiot2.
