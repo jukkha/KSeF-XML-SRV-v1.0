@@ -62,6 +62,8 @@ INTERFACE zif_ksef_xml_types
 
   TYPES:
     BEGIN OF ty_invoice_header,
+      INCLUDE TYPE zksef_s_head.
+  TYPES:
       ksef_id TYPE zlx_ksef_id,
     END OF ty_invoice_header.
 
