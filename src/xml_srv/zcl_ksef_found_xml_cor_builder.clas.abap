@@ -351,7 +351,7 @@ CLASS zcl_ksef_found_xml_cor_builder IMPLEMENTATION.
     rs_podmiot2k-kodkraju = is_podmiot3-kodkraju.
     rs_podmiot2k-adresl1 = is_podmiot3-adr_adresl1.
     rs_podmiot2k-adresl2 = is_podmiot3-adr_adresl2.
-    rs_podmiot2k-gln = is_podmiot3-gln.
+    rs_podmiot2k-gln = is_podmiot3-adr_gln.
   ENDMETHOD.
 
   METHOD get_index_from_key.

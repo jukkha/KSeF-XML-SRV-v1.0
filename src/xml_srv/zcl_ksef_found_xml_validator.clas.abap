@@ -436,7 +436,7 @@ CLASS zcl_ksef_found_xml_validator IMPLEMENTATION.
       AND is_podmiot3-kodkraju IS INITIAL
       AND is_podmiot3-adr_adresl1 IS INITIAL
       AND is_podmiot3-adr_adresl2 IS INITIAL
-      AND is_podmiot3-gln IS INITIAL
+      AND is_podmiot3-adr_gln IS INITIAL
       AND is_podmiot3-idnabywcy IS INITIAL ).
   ENDMETHOD.
 

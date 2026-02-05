@@ -151,7 +151,7 @@ CLASS zcl_ksef_found_xml_reader IMPLEMENTATION.
                   WHEN 'AdresL2'.
                     ls_p3-adr_adresl2 = me->read_text_value( lo_reader ).
                   WHEN 'GLN'.
-                    ls_p3-gln = me->read_text_value( lo_reader ).
+                    ls_p3-adr_gln = me->read_text_value( lo_reader ).
                 ENDCASE.
               ENDIF.
 
