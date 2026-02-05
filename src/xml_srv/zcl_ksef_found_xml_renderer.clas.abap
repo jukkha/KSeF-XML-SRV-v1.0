@@ -220,12 +220,14 @@ CLASS zcl_ksef_found_xml_renderer IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD append_header.
+    DATA(ls_header_data) = is_header-include.
+
     DATA(lo_header) = ir_document->create_simple_element(
       EXPORTING
         name   = 'Naglowek'
         parent = ir_parent ).
 
-    DATA(lv_kod_formularza) = me->get_component_value( is_data = is_header iv_component = 'NAGL_KODFORMULARZA' ).
+    DATA(lv_kod_formularza) = me->get_component_value( is_data = ls_header_data iv_component = 'NAGL_KODFORMULARZA' ).
     IF lv_kod_formularza IS INITIAL.
       lv_kod_formularza = gc_kod_formularza.
     ENDIF.
@@ -238,7 +240,7 @@ CLASS zcl_ksef_found_xml_renderer IMPLEMENTATION.
     lo_kod_form->set_attribute( name = 'kodSystemowy' value = gc_kod_systemowy ).
     lo_kod_form->set_attribute( name = 'wersjaSchemy' value = gc_wersja_schemy ).
 
-    DATA(lv_variant) = me->get_component_value( is_data = is_header iv_component = 'NAGL_WARIANTFORMULARZA' ).
+    DATA(lv_variant) = me->get_component_value( is_data = ls_header_data iv_component = 'NAGL_WARIANTFORMULARZA' ).
     IF lv_variant IS INITIAL.
       lv_variant = gc_wariant_formularza.
     ENDIF.
@@ -254,14 +256,14 @@ CLASS zcl_ksef_found_xml_renderer IMPLEMENTATION.
         ir_document = ir_document
         ir_parent   = lo_header
         iv_tagname  = 'DataWytworzeniaFa'
-        iv_value    = me->get_component_value( is_data = is_header iv_component = 'NAGL_DATAWYTWORZENIAFA' ) ).
+        iv_value    = me->get_component_value( is_data = ls_header_data iv_component = 'NAGL_DATAWYTWORZENIAFA' ) ).
 
     me->append_simple_tag(
       EXPORTING
         ir_document = ir_document
         ir_parent   = lo_header
         iv_tagname  = 'SystemInfo'
-        iv_value    = me->get_component_value( is_data = is_header iv_component = 'NAGL_SYSTEMINFO' ) ).
+        iv_value    = me->get_component_value( is_data = ls_header_data iv_component = 'NAGL_SYSTEMINFO' ) ).
   ENDMETHOD.
 
   METHOD append_podmiot.
@@ -443,8 +445,9 @@ CLASS zcl_ksef_found_xml_renderer IMPLEMENTATION.
 
   METHOD append_fa_section.
     DATA(lv_has_section) = abap_false.
+    DATA(ls_header_data) = is_invoice-header-include.
 
-    IF me->has_struct_data( is_data = is_invoice-header ) = abap_true.
+    IF me->has_struct_data( is_data = ls_header_data ) = abap_true.
       lv_has_section = abap_true.
     ENDIF.
     IF lines( is_invoice-items ) > 0 OR lines( is_invoice-zal_items ) > 0.
@@ -478,7 +481,7 @@ CLASS zcl_ksef_found_xml_renderer IMPLEMENTATION.
       EXPORTING
         ir_document = ir_document
         ir_parent   = lo_fa
-        is_data     = is_invoice-header
+        is_data     = ls_header_data
         it_tag_map  = lt_fa_map ).
 
     me->append_podmiot(
