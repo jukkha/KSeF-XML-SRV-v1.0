@@ -16,63 +16,63 @@ CLASS zcl_ksef_found_xml_assembler IMPLEMENTATION.
     rs_invoice-header-ksef_id = is_repo_invoice-ksef_id.
     rs_invoice-correction_context-xml_old = is_repo_invoice-xml_old.
 
-    rs_invoice-header-nagl_kodformularza = 'FA'.
-    rs_invoice-header-nagl_wariantformularza = '3'.
+    rs_invoice-header-include-nagl_kodformularza = 'FA'.
+    rs_invoice-header-include-nagl_wariantformularza = '3'.
 
     IF is_repo_invoice-main_info-b_cpudt IS NOT INITIAL
        AND is_repo_invoice-main_info-b_cputm IS NOT INITIAL.
-      rs_invoice-header-nagl_datawytworzeniafa =
+      rs_invoice-header-include-nagl_datawytworzeniafa =
         |{ is_repo_invoice-main_info-b_cpudt DATE = ISO }T{ is_repo_invoice-main_info-b_cputm TIME = ISO }Z|.
     ENDIF.
 
-    rs_invoice-header-fa_kodwaluty = is_repo_invoice-main_info-v_waerk.
-    rs_invoice-header-fa_p_1 = |{ is_repo_invoice-main_info-b_bldat DATE = ISO }|.
-    rs_invoice-header-fa_p_2 = is_repo_invoice-main_info-v_vbeln.
-    rs_invoice-header-fa_p_15 = is_repo_invoice-main_info-g_wrbtr.
-    rs_invoice-header-fa_kurswalutyz = is_repo_invoice-main_info-b_kursf.
+    rs_invoice-header-include-fa_kodwaluty = is_repo_invoice-main_info-v_waerk.
+    rs_invoice-header-include-fa_p_1 = |{ is_repo_invoice-main_info-b_bldat DATE = ISO }|.
+    rs_invoice-header-include-fa_p_2 = is_repo_invoice-main_info-v_vbeln.
+    rs_invoice-header-include-fa_p_15 = is_repo_invoice-main_info-g_wrbtr.
+    rs_invoice-header-include-fa_kurswalutyz = is_repo_invoice-main_info-b_kursf.
 
     CASE is_repo_invoice-main_info-v_fkart.
       WHEN 'F2'.
-        rs_invoice-header-fa_rodzajfaktury = 'VAT'.
+        rs_invoice-header-include-fa_rodzajfaktury = 'VAT'.
       WHEN 'G2' OR 'S1'.
-        rs_invoice-header-fa_rodzajfaktury = 'KOR'.
+        rs_invoice-header-include-fa_rodzajfaktury = 'KOR'.
       WHEN 'FAZ'.
-        rs_invoice-header-fa_rodzajfaktury = 'ZAL'.
+        rs_invoice-header-include-fa_rodzajfaktury = 'ZAL'.
       WHEN OTHERS.
-        CLEAR rs_invoice-header-fa_rodzajfaktury.
+        CLEAR rs_invoice-header-include-fa_rodzajfaktury.
     ENDCASE.
 
     CASE is_repo_invoice-main_info-t_mwskz.
       WHEN 'T1' OR 'T4'.
-        rs_invoice-header-fa_p_13_1 = is_repo_invoice-main_info-t_fwbas.
-        rs_invoice-header-fa_p_14_1 = is_repo_invoice-main_info-t_hwste.
+        rs_invoice-header-include-fa_p_13_1 = is_repo_invoice-main_info-t_fwbas.
+        rs_invoice-header-include-fa_p_14_1 = is_repo_invoice-main_info-t_hwste.
         IF is_repo_invoice-main_info-v_waerk <> 'PLN'.
-          rs_invoice-header-fa_p_14_1w = is_repo_invoice-main_info-t_fwste.
+          rs_invoice-header-include-fa_p_14_1w = is_repo_invoice-main_info-t_fwste.
         ENDIF.
       WHEN 'T2'.
-        rs_invoice-header-fa_p_13_2 = is_repo_invoice-main_info-t_fwbas.
-        rs_invoice-header-fa_p_14_2 = is_repo_invoice-main_info-t_hwste.
+        rs_invoice-header-include-fa_p_13_2 = is_repo_invoice-main_info-t_fwbas.
+        rs_invoice-header-include-fa_p_14_2 = is_repo_invoice-main_info-t_hwste.
         IF is_repo_invoice-main_info-v_waerk = 'PLN'.
-          rs_invoice-header-fa_p_14_2w = is_repo_invoice-main_info-t_fwste.
+          rs_invoice-header-include-fa_p_14_2w = is_repo_invoice-main_info-t_fwste.
         ENDIF.
       WHEN 'T3'.
-        rs_invoice-header-fa_p_13_3 = is_repo_invoice-main_info-t_fwbas.
-        rs_invoice-header-fa_p_14_3 = is_repo_invoice-main_info-t_hwste.
+        rs_invoice-header-include-fa_p_13_3 = is_repo_invoice-main_info-t_fwbas.
+        rs_invoice-header-include-fa_p_14_3 = is_repo_invoice-main_info-t_hwste.
         IF is_repo_invoice-main_info-v_waerk = 'PLN'.
-          rs_invoice-header-fa_p_14_3w = is_repo_invoice-main_info-t_fwste.
+          rs_invoice-header-include-fa_p_14_3w = is_repo_invoice-main_info-t_fwste.
         ENDIF.
       WHEN OTHERS.
     ENDCASE.
 
-    rs_invoice-header-fa_nrzamowienia = is_repo_invoice-main_info-v_sppord.
+    rs_invoice-header-include-fa_nrzamowienia = is_repo_invoice-main_info-v_sppord.
 
     IF is_repo_invoice-correction-ksef_num IS NOT INITIAL.
-      rs_invoice-header-fa_nrkseffakorygowanej = is_repo_invoice-correction-ksef_num.
-      rs_invoice-header-fa_nrksef = '1'.
+      rs_invoice-header-include-fa_nrkseffakorygowanej = is_repo_invoice-correction-ksef_num.
+      rs_invoice-header-include-fa_nrksef = '1'.
     ENDIF.
-    rs_invoice-header-fa_nrfakorygowanej = is_repo_invoice-correction-vbeln.
+    rs_invoice-header-include-fa_nrfakorygowanej = is_repo_invoice-correction-vbeln.
     IF is_repo_invoice-correction-xmlgen_date IS NOT INITIAL.
-      rs_invoice-header-fa_datawystfakorygowanej = |{ is_repo_invoice-correction-xmlgen_date DATE = ISO }|.
+      rs_invoice-header-include-fa_datawystfakorygowanej = |{ CONV d( is_repo_invoice-correction-xmlgen_date ) DATE = ISO }|.
     ENDIF.
 
     rs_invoice-podmiot1-prefikspodatnika = is_repo_invoice-vendor_address-stceg(2).
@@ -97,15 +97,15 @@ CLASS zcl_ksef_found_xml_assembler IMPLEMENTATION.
     rs_invoice-podmiot2-kodkraju = is_repo_invoice-customer_address-land1.
 
     LOOP AT is_repo_invoice-podmiot3 INTO DATA(ls_repo_podmiot3).
-      APPEND VALUE zif_ksef_xml_types=>ty_podmiot(
+      APPEND VALUE zif_ksef_xml_types=>ty_podmiot3(
         nip      = ls_repo_podmiot3-stceg+2
         kodue    = COND #( WHEN ls_repo_podmiot3-stceg+2 IS INITIAL THEN ls_repo_podmiot3-stceg(2) )
         nrvatue  = COND #( WHEN ls_repo_podmiot3-stceg+2 IS INITIAL THEN ls_repo_podmiot3-stceg+2 )
         brakid   = COND #( WHEN ls_repo_podmiot3-stceg+2 IS INITIAL THEN '1' ELSE '' )
         nazwa    = ls_repo_podmiot3-name1
         kodkraju = ls_repo_podmiot3-land1
-        adresl1  = ls_repo_podmiot3-stras
-        adresl2  = |{ ls_repo_podmiot3-pstlz }{ ls_repo_podmiot3-ort01 }|
+        adr_adresl1  = ls_repo_podmiot3-stras
+        adr_adresl2  = |{ ls_repo_podmiot3-pstlz }{ ls_repo_podmiot3-ort01 }|
         rola     = zif_ksef_constants=>br-(ls_repo_podmiot3-parvw)
         rolainna = COND #( WHEN zif_ksef_constants=>br-(ls_repo_podmiot3-parvw) IS INITIAL THEN '1' ELSE '' )
         opisroli = COND #( WHEN zif_ksef_constants=>br-(ls_repo_podmiot3-parvw) IS INITIAL THEN ls_repo_podmiot3-vtext ELSE '' ) )
